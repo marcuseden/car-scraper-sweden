@@ -122,6 +122,9 @@ const en = {
   english: 'English',
   swedish: 'Swedish',
   changeLanguage: 'Change Language',
+  
+  // Deployment trigger
+  deploymentTrigger: 'Trigger new deployment',
 };
 
 export default en; 

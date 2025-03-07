@@ -19,9 +19,9 @@ import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
 import SearchIcon from '@mui/icons-material/Search';
 
 const pages = [
-  { name: 'Home', path: '/' },
-  { name: 'Car Listings', path: '/cars' },
-  { name: 'Car Scraper', path: '/scraper' },
+  { name: 'Hem', path: '/' },
+  { name: 'Billistor', path: '/cars' },
+  { name: 'Bilsökare', path: '/scraper' },
 ];
 
 function Header() {
@@ -63,7 +63,7 @@ function Header() {
               textDecoration: 'none',
             }}
           >
-            Premium Cars
+            Premium Bilar
           </Typography>
 
           {/* Mobile menu */}
@@ -132,7 +132,7 @@ function Header() {
               textDecoration: 'none',
             }}
           >
-            Premium Cars
+            Premium Bilar
           </Typography>
 
           {/* Desktop menu */}
@@ -167,11 +167,12 @@ function Header() {
               sx={{ 
                 display: { xs: 'none', sm: 'block' },
                 borderRadius: '20px',
-                px: 3
+                px: 3,
+                mr: 2
               }}
               startIcon={<SearchIcon />}
             >
-              Start Scraper
+              Starta Sökning
             </Button>
             <Button 
               variant="outlined" 
@@ -184,7 +185,7 @@ function Header() {
                 px: 3
               }}
             >
-              Find Cars
+              Hitta Bilar
             </Button>
           </Box>
         </Toolbar>

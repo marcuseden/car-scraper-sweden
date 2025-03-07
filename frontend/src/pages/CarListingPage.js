@@ -40,106 +40,106 @@ const carListings = [
   {
     id: 1,
     title: 'BMW 5 Series',
-    price: 45000,
+    price: 450000,
     year: 2022,
-    mileage: '15,000 mi',
-    image: 'https://source.unsplash.com/random/300x200/?bmw',
-    location: 'San Francisco, CA',
-    fuel: 'Gasoline',
-    transmission: 'Automatic',
+    mileage: '15 000 km',
+    image: 'https://images.unsplash.com/photo-1523983388277-336a66bf9bcd?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+    location: 'Stockholm',
+    fuel: 'Bensin',
+    transmission: 'Automat',
     favorite: false,
   },
   {
     id: 2,
     title: 'Mercedes-Benz E-Class',
-    price: 52000,
+    price: 520000,
     year: 2021,
-    mileage: '12,500 mi',
-    image: 'https://source.unsplash.com/random/300x200/?mercedes',
-    location: 'Los Angeles, CA',
+    mileage: '12 500 km',
+    image: 'https://images.unsplash.com/photo-1553440569-bcc63803a83d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+    location: 'Göteborg',
     fuel: 'Diesel',
-    transmission: 'Automatic',
+    transmission: 'Automat',
     favorite: true,
   },
   {
     id: 3,
     title: 'Audi A6',
-    price: 48500,
+    price: 485000,
     year: 2022,
-    mileage: '9,800 mi',
-    image: 'https://source.unsplash.com/random/300x200/?audi',
-    location: 'New York, NY',
-    fuel: 'Gasoline',
-    transmission: 'Automatic',
+    mileage: '9 800 km',
+    image: 'https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+    location: 'Malmö',
+    fuel: 'Bensin',
+    transmission: 'Automat',
     favorite: false,
   },
   {
     id: 4,
     title: 'Tesla Model 3',
-    price: 39900,
+    price: 399000,
     year: 2023,
-    mileage: '5,200 mi',
-    image: 'https://source.unsplash.com/random/300x200/?tesla',
-    location: 'Chicago, IL',
-    fuel: 'Electric',
-    transmission: 'Automatic',
+    mileage: '5 200 km',
+    image: 'https://images.unsplash.com/photo-1560958089-b8a1929cea89?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+    location: 'Uppsala',
+    fuel: 'El',
+    transmission: 'Automat',
     favorite: false,
   },
   {
     id: 5,
     title: 'Lexus ES',
-    price: 42000,
+    price: 420000,
     year: 2022,
-    mileage: '11,200 mi',
-    image: 'https://source.unsplash.com/random/300x200/?lexus',
-    location: 'Miami, FL',
+    mileage: '11 200 km',
+    image: 'https://images.unsplash.com/photo-1583267746897-2cf415887172?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+    location: 'Västerås',
     fuel: 'Hybrid',
-    transmission: 'Automatic',
+    transmission: 'Automat',
     favorite: false,
   },
   {
     id: 6,
     title: 'Porsche 911',
-    price: 115000,
+    price: 1150000,
     year: 2021,
-    mileage: '8,500 mi',
-    image: 'https://source.unsplash.com/random/300x200/?porsche',
-    location: 'Seattle, WA',
-    fuel: 'Gasoline',
-    transmission: 'Manual',
+    mileage: '8 500 km',
+    image: 'https://images.unsplash.com/photo-1584060622420-0673aad46076?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+    location: 'Stockholm',
+    fuel: 'Bensin',
+    transmission: 'Manuell',
     favorite: true,
   },
   {
     id: 7,
     title: 'Range Rover Sport',
-    price: 78000,
+    price: 780000,
     year: 2022,
-    mileage: '14,300 mi',
-    image: 'https://source.unsplash.com/random/300x200/?rangerover',
-    location: 'Denver, CO',
+    mileage: '14 300 km',
+    image: 'https://images.unsplash.com/photo-1539788816080-8bdd722d8c22?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+    location: 'Linköping',
     fuel: 'Diesel',
-    transmission: 'Automatic',
+    transmission: 'Automat',
     favorite: false,
   },
   {
     id: 8,
     title: 'Jaguar F-Pace',
-    price: 56000,
+    price: 560000,
     year: 2023,
-    mileage: '7,800 mi',
-    image: 'https://source.unsplash.com/random/300x200/?jaguar',
-    location: 'Austin, TX',
-    fuel: 'Gasoline',
-    transmission: 'Automatic',
+    mileage: '7 800 km',
+    image: 'https://images.unsplash.com/photo-1580274455191-1c62238fa333?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+    location: 'Helsingborg',
+    fuel: 'Bensin',
+    transmission: 'Automat',
     favorite: false,
   },
 ];
 
 // Filter options
-const makes = ['All Makes', 'Audi', 'BMW', 'Jaguar', 'Lexus', 'Mercedes-Benz', 'Porsche', 'Range Rover', 'Tesla'];
-const years = ['All Years', '2023', '2022', '2021', '2020', '2019', '2018'];
-const fuelTypes = ['All Fuel Types', 'Gasoline', 'Diesel', 'Electric', 'Hybrid'];
-const transmissions = ['All Transmissions', 'Automatic', 'Manual'];
+const makes = ['Alla märken', 'Audi', 'BMW', 'Jaguar', 'Lexus', 'Mercedes-Benz', 'Porsche', 'Range Rover', 'Tesla'];
+const years = ['Alla år', '2023', '2022', '2021', '2020', '2019', '2018'];
+const fuelTypes = ['Alla bränsletyper', 'Bensin', 'Diesel', 'El', 'Hybrid'];
+const transmissions = ['Alla växellådor', 'Automat', 'Manuell'];
 
 function CarListingPage() {
   const theme = useTheme();
@@ -148,10 +148,10 @@ function CarListingPage() {
   
   const [searchTerm, setSearchTerm] = useState('');
   const [priceRange, setPriceRange] = useState([0, 150000]);
-  const [selectedMake, setSelectedMake] = useState('All Makes');
-  const [selectedYear, setSelectedYear] = useState('All Years');
-  const [selectedFuel, setSelectedFuel] = useState('All Fuel Types');
-  const [selectedTransmission, setSelectedTransmission] = useState('All Transmissions');
+  const [selectedMake, setSelectedMake] = useState('Alla märken');
+  const [selectedYear, setSelectedYear] = useState('Alla år');
+  const [selectedFuel, setSelectedFuel] = useState('Alla bränsletyper');
+  const [selectedTransmission, setSelectedTransmission] = useState('Alla växellådor');
   const [sortBy, setSortBy] = useState('newest');
   const [showFilters, setShowFilters] = useState(!isMobile);
   const [cars, setCars] = useState(carListings);
@@ -209,28 +209,28 @@ function CarListingPage() {
     );
     
     // Apply make filter
-    if (selectedMake !== 'All Makes') {
+    if (selectedMake !== 'Alla märken') {
       filteredCars = filteredCars.filter(car => 
         car.title.includes(selectedMake)
       );
     }
     
     // Apply year filter
-    if (selectedYear !== 'All Years') {
+    if (selectedYear !== 'Alla år') {
       filteredCars = filteredCars.filter(car => 
         car.year.toString() === selectedYear
       );
     }
     
     // Apply fuel type filter
-    if (selectedFuel !== 'All Fuel Types') {
+    if (selectedFuel !== 'Alla bränsletyper') {
       filteredCars = filteredCars.filter(car => 
         car.fuel === selectedFuel
       );
     }
     
     // Apply transmission filter
-    if (selectedTransmission !== 'All Transmissions') {
+    if (selectedTransmission !== 'Alla växellådor') {
       filteredCars = filteredCars.filter(car => 
         car.transmission === selectedTransmission
       );
@@ -397,16 +397,16 @@ function CarListingPage() {
               </Grid>
               <Grid item xs={12}>
                 <Typography id="price-range-slider" gutterBottom>
-                  Price Range: ${priceRange[0].toLocaleString()} - ${priceRange[1].toLocaleString()}
+                  Prisintervall: {priceRange[0].toLocaleString()} kr - {priceRange[1].toLocaleString()} kr
                 </Typography>
                 <Slider
                   value={priceRange}
                   onChange={handlePriceChange}
                   valueLabelDisplay="auto"
                   min={0}
-                  max={150000}
-                  step={5000}
-                  valueLabelFormat={(value) => `$${value.toLocaleString()}`}
+                  max={1500000}
+                  step={50000}
+                  valueLabelFormat={(value) => `${value.toLocaleString()} kr`}
                   aria-labelledby="price-range-slider"
                 />
               </Grid>
@@ -422,48 +422,48 @@ function CarListingPage() {
         </Typography>
         
         <Stack direction="row" spacing={1} flexWrap="wrap">
-          {selectedMake !== 'All Makes' && (
+          {selectedMake !== 'Alla märken' && (
             <Chip 
               label={`Make: ${selectedMake}`} 
-              onDelete={() => setSelectedMake('All Makes')} 
+              onDelete={() => setSelectedMake('Alla märken')} 
               size="small" 
               sx={{ m: 0.5 }}
             />
           )}
-          {selectedYear !== 'All Years' && (
+          {selectedYear !== 'Alla år' && (
             <Chip 
               label={`Year: ${selectedYear}`} 
-              onDelete={() => setSelectedYear('All Years')} 
+              onDelete={() => setSelectedYear('Alla år')} 
               size="small" 
               sx={{ m: 0.5 }}
             />
           )}
-          {selectedFuel !== 'All Fuel Types' && (
+          {selectedFuel !== 'Alla bränsletyper' && (
             <Chip 
               label={`Fuel: ${selectedFuel}`} 
-              onDelete={() => setSelectedFuel('All Fuel Types')} 
+              onDelete={() => setSelectedFuel('Alla bränsletyper')} 
               size="small" 
               sx={{ m: 0.5 }}
             />
           )}
-          {selectedTransmission !== 'All Transmissions' && (
+          {selectedTransmission !== 'Alla växellådor' && (
             <Chip 
               label={`Transmission: ${selectedTransmission}`} 
-              onDelete={() => setSelectedTransmission('All Transmissions')} 
+              onDelete={() => setSelectedTransmission('Alla växellådor')} 
               size="small" 
               sx={{ m: 0.5 }}
             />
           )}
-          {(selectedMake !== 'All Makes' || selectedYear !== 'All Years' || 
-            selectedFuel !== 'All Fuel Types' || selectedTransmission !== 'All Transmissions' || 
+          {(selectedMake !== 'Alla märken' || selectedYear !== 'Alla år' || 
+            selectedFuel !== 'Alla bränsletyper' || selectedTransmission !== 'Alla växellådor' || 
             priceRange[0] > 0 || priceRange[1] < 150000 || searchTerm) && (
             <Chip 
               label="Clear All" 
               onClick={() => {
-                setSelectedMake('All Makes');
-                setSelectedYear('All Years');
-                setSelectedFuel('All Fuel Types');
-                setSelectedTransmission('All Transmissions');
+                setSelectedMake('Alla märken');
+                setSelectedYear('Alla år');
+                setSelectedFuel('Alla bränsletyper');
+                setSelectedTransmission('Alla växellådor');
                 setPriceRange([0, 150000]);
                 setSearchTerm('');
               }} 
@@ -522,7 +522,7 @@ function CarListingPage() {
                         {car.title}
                       </Typography>
                       <Typography variant="h6" color="primary" sx={{ fontWeight: 700, mb: 2 }}>
-                        ${car.price.toLocaleString()}
+                        {car.price.toLocaleString()} kr
                       </Typography>
                       
                       <Grid container spacing={1}>
@@ -587,10 +587,10 @@ function CarListingPage() {
           <Button 
             variant="contained" 
             onClick={() => {
-              setSelectedMake('All Makes');
-              setSelectedYear('All Years');
-              setSelectedFuel('All Fuel Types');
-              setSelectedTransmission('All Transmissions');
+              setSelectedMake('Alla märken');
+              setSelectedYear('Alla år');
+              setSelectedFuel('Alla bränsletyper');
+              setSelectedTransmission('Alla växellådor');
               setPriceRange([0, 150000]);
               setSearchTerm('');
             }}

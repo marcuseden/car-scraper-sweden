@@ -56,11 +56,11 @@ const scraperHistory = [
 
 // Example car types for suggestions
 const carTypeSuggestions = [
-  "Luxury sedans under $50,000",
-  "Electric SUVs with 300+ mile range",
-  "Sports cars with manual transmission",
-  "Family minivans with entertainment package",
-  "Hybrid vehicles with leather interior"
+  "Lyxbilar under 500 000 kr",
+  "Elbilar med över 400 km räckvidd",
+  "Sportbilar med manuell växellåda",
+  "Familjebil med underhållningssystem",
+  "Hybridbilar med läderklädsel"
 ];
 
 function ScraperPage() {
@@ -181,17 +181,17 @@ function ScraperPage() {
   const processUserInput = (text) => {
     const lowerText = text.toLowerCase();
     
-    if (lowerText.includes('start') || lowerText.includes('begin') || lowerText.includes('scrape')) {
-      addBotMessage("I'll start scraping for cars based on your criteria. This may take a few minutes. You'll see the results in real-time.");
+    if (lowerText.includes('starta') || lowerText.includes('börja') || lowerText.includes('sök')) {
+      addBotMessage("Jag börjar söka efter bilar på Blocket.se baserat på dina kriterier. Detta kan ta några minuter. Du kommer att se resultaten i realtid.");
       setScraperRunning(true);
       setScraperProgress(0);
-    } else if (lowerText.includes('stop') || lowerText.includes('cancel')) {
-      addBotMessage("I've stopped the scraper. You can start a new search anytime.");
+    } else if (lowerText.includes('stoppa') || lowerText.includes('avbryt')) {
+      addBotMessage("Jag har stoppat sökningen. Du kan starta en ny sökning när som helst.");
       setScraperRunning(false);
-    } else if (lowerText.includes('help') || lowerText.includes('how')) {
-      addBotMessage("To use the car scraper, simply describe the type of cars you want to find. For example, 'Find BMW sedans from 2018-2022 with less than 50,000 miles' or 'Scrape Tesla Model 3 listings in California'. Then click 'Start Scraper' to begin.");
+    } else if (lowerText.includes('hjälp') || lowerText.includes('hur')) {
+      addBotMessage("För att använda bilsökaren, beskriv vilken typ av bilar du vill hitta. Till exempel, 'Hitta BMW sedan från 2018-2022 med mindre än 5000 mil' eller 'Sök efter Tesla Model 3 i Stockholm'. Klicka sedan på 'Starta sökning' för att börja.");
     } else {
-      addBotMessage(`I understand you're looking for ${text}. Would you like me to start scraping for these cars now? Click the "Start Scraper" button when ready.`);
+      addBotMessage(`Jag förstår att du letar efter ${text}. Vill du att jag ska börja söka efter dessa bilar på Blocket.se nu? Klicka på "Starta sökning" när du är redo.`);
     }
   };
   
@@ -234,11 +234,11 @@ function ScraperPage() {
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
       <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 700 }}>
-        Car Scraper
+        Bilsökare
       </Typography>
       
       <Typography variant="subtitle1" color="text.secondary" paragraph>
-        Describe the type of cars you want to scrape, and our system will find them for you. You can use natural language to specify make, model, year range, price range, mileage, and other features.
+        Beskriv vilka bilar du vill söka efter, så hittar vårt system dem åt dig. Du kan använda naturligt språk för att ange märke, modell, årsintervall, prisintervall, körsträcka och andra funktioner.
       </Typography>
       
       <Grid container spacing={4}>
@@ -264,7 +264,7 @@ function ScraperPage() {
                 alignItems: 'center'
               }}
             >
-              <Typography variant="h6">Car Scraper Assistant</Typography>
+              <Typography variant="h6">Bilsökningsassistent</Typography>
               <IconButton 
                 color="inherit" 
                 onClick={toggleHistory}
@@ -286,11 +286,11 @@ function ScraperPage() {
                 <Box sx={{ textAlign: 'center', mt: 10 }}>
                   <DirectionsCarIcon sx={{ fontSize: 60, color: 'text.disabled', mb: 2 }} />
                   <Typography color="text.secondary">
-                    Start a conversation by describing what cars you want to scrape.
+                    Starta en konversation genom att beskriva vilka bilar du vill söka efter.
                   </Typography>
                   <Box sx={{ mt: 4 }}>
                     <Typography variant="subtitle2" gutterBottom>
-                      Try saying something like:
+                      Prova att säga något som:
                     </Typography>
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 1, mt: 2 }}>
                       {carTypeSuggestions.map((suggestion, index) => (
@@ -338,7 +338,7 @@ function ScraperPage() {
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
                 <TextField
                   fullWidth
-                  placeholder="Describe the cars you want to scrape..."
+                  placeholder="Beskriv vilka bilar du vill söka efter på Blocket.se..."
                   value={inputText}
                   onChange={handleInputChange}
                   onKeyPress={handleKeyPress}
@@ -365,7 +365,7 @@ function ScraperPage() {
                   onClick={handleSendMessage}
                   disabled={!inputText.trim() || isProcessing || scraperRunning}
                 >
-                  Send
+                  Skicka
                 </Button>
               </Box>
             </Box>
@@ -374,7 +374,7 @@ function ScraperPage() {
           {/* Scraper Controls */}
           <Paper sx={{ p: 3, borderRadius: 2 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-              <Typography variant="h6">Scraper Controls</Typography>
+              <Typography variant="h6">Sökkontroller</Typography>
               <IconButton aria-label="settings">
                 <SettingsIcon />
               </IconButton>
@@ -382,7 +382,7 @@ function ScraperPage() {
             
             <Box sx={{ mb: 3 }}>
               <Typography variant="body2" color="text.secondary" gutterBottom>
-                Progress: {scraperProgress}%
+                Framsteg: {scraperProgress}%
               </Typography>
               <Box sx={{ position: 'relative', pt: 1 }}>
                 <Box
@@ -418,7 +418,7 @@ function ScraperPage() {
                 disabled={scraperRunning || isProcessing}
                 fullWidth
               >
-                Start Scraper
+                Starta sökning
               </Button>
               <Button
                 variant="outlined"
@@ -428,7 +428,7 @@ function ScraperPage() {
                 disabled={!scraperRunning}
                 fullWidth
               >
-                Stop Scraper
+                Stoppa sökning
               </Button>
             </Box>
           </Paper>
@@ -438,13 +438,13 @@ function ScraperPage() {
           {/* History or Settings Panel */}
           <Paper sx={{ p: 3, borderRadius: 2, height: '100%' }}>
             <Typography variant="h6" gutterBottom>
-              {showHistory ? 'Scraper History' : 'Scraper Settings'}
+              {showHistory ? 'Sökhistorik' : 'Sökinställningar'}
             </Typography>
             
             {showHistory ? (
               <>
                 <Typography variant="body2" color="text.secondary" paragraph>
-                  Your recent scraping activities:
+                  Dina senaste sökaktiviteter:
                 </Typography>
                 <Box sx={{ mt: 2 }}>
                   {scraperHistory.map((item) => (
@@ -481,53 +481,53 @@ function ScraperPage() {
             ) : (
               <>
                 <Typography variant="body2" color="text.secondary" paragraph>
-                  Configure your scraper settings:
+                  Konfigurera dina sökinställningar:
                 </Typography>
                 <Box sx={{ mt: 2 }}>
                   <Typography variant="subtitle2" gutterBottom>
-                    Sources to Scrape
+                    Källor att söka i
                   </Typography>
                   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 3 }}>
-                    <Chip label="AutoTrader" color="primary" />
-                    <Chip label="Cars.com" color="primary" />
-                    <Chip label="CarGurus" color="primary" />
-                    <Chip label="TrueCar" variant="outlined" />
-                    <Chip label="Edmunds" variant="outlined" />
+                    <Chip label="Blocket.se" color="primary" />
+                    <Chip label="Bytbil.com" variant="outlined" />
+                    <Chip label="Bilweb.se" variant="outlined" />
+                    <Chip label="Wayke.se" variant="outlined" />
+                    <Chip label="Kvdbil.se" variant="outlined" />
                   </Box>
                   
                   <Typography variant="subtitle2" gutterBottom>
-                    Data to Collect
+                    Data att samla in
                   </Typography>
                   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 3 }}>
-                    <Chip label="Price" color="primary" />
-                    <Chip label="Mileage" color="primary" />
-                    <Chip label="Year" color="primary" />
-                    <Chip label="Features" color="primary" />
-                    <Chip label="Images" color="primary" />
-                    <Chip label="Seller Info" variant="outlined" />
-                    <Chip label="History Report" variant="outlined" />
+                    <Chip label="Pris" color="primary" />
+                    <Chip label="Körsträcka" color="primary" />
+                    <Chip label="År" color="primary" />
+                    <Chip label="Funktioner" color="primary" />
+                    <Chip label="Bilder" color="primary" />
+                    <Chip label="Säljarinformation" variant="outlined" />
+                    <Chip label="Historikrapport" variant="outlined" />
                   </Box>
                   
                   <Typography variant="subtitle2" gutterBottom>
-                    Location
+                    Plats
                   </Typography>
                   <TextField
                     fullWidth
-                    placeholder="Enter zip code or city"
-                    defaultValue="94103"
+                    placeholder="Ange postnummer eller stad"
+                    defaultValue="Stockholm"
                     size="small"
                     sx={{ mb: 3 }}
                   />
                   
                   <Typography variant="subtitle2" gutterBottom>
-                    Search Radius
+                    Sökradie
                   </Typography>
                   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                    <Chip label="25 miles" variant="outlined" />
-                    <Chip label="50 miles" color="primary" />
-                    <Chip label="100 miles" variant="outlined" />
-                    <Chip label="200 miles" variant="outlined" />
-                    <Chip label="Nationwide" variant="outlined" />
+                    <Chip label="25 km" variant="outlined" />
+                    <Chip label="50 km" color="primary" />
+                    <Chip label="100 km" variant="outlined" />
+                    <Chip label="200 km" variant="outlined" />
+                    <Chip label="Hela Sverige" variant="outlined" />
                   </Box>
                 </Box>
                 

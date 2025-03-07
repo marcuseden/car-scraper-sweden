@@ -40,45 +40,45 @@ import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 const carData = {
   id: 1,
   title: 'BMW 5 Series 530i M Sport',
-  price: 45000,
+  price: 450000,
   year: 2022,
-  mileage: '15,000 mi',
-  location: 'San Francisco, CA',
-  fuel: 'Gasoline',
-  transmission: 'Automatic',
-  color: 'Alpine White',
-  engine: '2.0L Turbocharged I4',
-  drivetrain: 'Rear-Wheel Drive',
+  mileage: '15 000 km',
+  location: 'Stockholm',
+  fuel: 'Bensin',
+  transmission: 'Automat',
+  color: 'Alpinvit',
+  engine: '2.0L Turbo I4',
+  drivetrain: 'Bakhjulsdrift',
   vin: 'WBA5R7C51LFH38113',
   favorite: false,
-  description: 'This BMW 5 Series 530i M Sport is in excellent condition with low mileage. It features premium leather seats, a panoramic sunroof, and the latest technology package including navigation, Apple CarPlay, and Android Auto. The vehicle has been meticulously maintained and comes with a full service history.',
+  description: 'Denna BMW 5 Series 530i M Sport är i utmärkt skick med låg körsträcka. Den har premiumläderklädsel, panoramasoltak och det senaste teknikpaketet inklusive navigation, Apple CarPlay och Android Auto. Fordonet har underhållits noggrant och levereras med fullständig servicehistorik.',
   features: [
-    'Premium Leather Seats',
-    'Panoramic Sunroof',
-    'Navigation System',
+    'Premiumläderklädsel',
+    'Panoramasoltak',
+    'Navigationssystem',
     'Apple CarPlay & Android Auto',
-    'Harman Kardon Sound System',
-    'Heated & Ventilated Seats',
-    'Adaptive Cruise Control',
-    'Lane Keeping Assist',
-    'Parking Sensors',
-    'Blind Spot Monitoring',
-    'Wireless Charging',
-    'LED Headlights',
+    'Harman Kardon ljudsystem',
+    'Uppvärmda & ventilerade säten',
+    'Adaptiv farthållare',
+    'Körfältsassistent',
+    'Parkeringssensorer',
+    'Dödavinkelvarnare',
+    'Trådlös laddning',
+    'LED-strålkastare',
   ],
   images: [
-    'https://source.unsplash.com/random/800x600/?bmw-5-series-1',
-    'https://source.unsplash.com/random/800x600/?bmw-5-series-2',
-    'https://source.unsplash.com/random/800x600/?bmw-5-series-3',
-    'https://source.unsplash.com/random/800x600/?bmw-5-series-4',
-    'https://source.unsplash.com/random/800x600/?bmw-5-series-5',
+    'https://images.unsplash.com/photo-1523983388277-336a66bf9bcd?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1555215695-3004980ad54e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1520050206274-a1ae44613e6d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1503376780353-7e6692767b70?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1526726538690-5cbf956ae2fd?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
   ],
   seller: {
-    name: 'Premium Auto Dealership',
-    phone: '(555) 123-4567',
-    email: 'contact@premiumauto.example',
-    address: '123 Auto Row, San Francisco, CA 94107',
-    logo: 'https://source.unsplash.com/random/100x100/?car-dealership-logo',
+    name: 'Premium Auto Stockholm',
+    phone: '08-123 45 67',
+    email: 'kontakt@premiumauto.se',
+    address: 'Bilgatan 123, 111 22 Stockholm',
+    logo: 'https://images.unsplash.com/photo-1551522435-a13afa10f103?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&h=100&q=80',
     rating: 4.8,
     reviewCount: 156,
   },
@@ -86,29 +86,29 @@ const carData = {
     {
       id: 2,
       title: 'Mercedes-Benz E-Class',
-      price: 52000,
+      price: 520000,
       year: 2021,
-      mileage: '12,500 mi',
-      image: 'https://source.unsplash.com/random/300x200/?mercedes',
-      location: 'Los Angeles, CA',
+      mileage: '12 500 km',
+      image: 'https://images.unsplash.com/photo-1553440569-bcc63803a83d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+      location: 'Göteborg',
     },
     {
       id: 3,
       title: 'Audi A6',
-      price: 48500,
+      price: 485000,
       year: 2022,
-      mileage: '9,800 mi',
-      image: 'https://source.unsplash.com/random/300x200/?audi',
-      location: 'New York, NY',
+      mileage: '9 800 km',
+      image: 'https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+      location: 'Malmö',
     },
     {
       id: 4,
       title: 'Tesla Model 3',
-      price: 39900,
+      price: 399000,
       year: 2023,
-      mileage: '5,200 mi',
-      image: 'https://source.unsplash.com/random/300x200/?tesla',
-      location: 'Chicago, IL',
+      mileage: '5 200 km',
+      image: 'https://images.unsplash.com/photo-1560958089-b8a1929cea89?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+      location: 'Uppsala',
     },
   ],
 };
@@ -500,7 +500,7 @@ function CarDetailPage() {
                           {similarCar.title}
                         </Typography>
                         <Typography variant="subtitle1" color="primary" sx={{ fontWeight: 700, mb: 1 }}>
-                          ${similarCar.price.toLocaleString()}
+                          {similarCar.price.toLocaleString()} kr
                         </Typography>
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                           <Typography variant="body2" color="text.secondary">
@@ -525,7 +525,7 @@ function CarDetailPage() {
           <Card sx={{ mb: 4, position: 'sticky', top: 20 }}>
             <CardContent>
               <Typography variant="h4" color="primary" sx={{ fontWeight: 700, mb: 2 }}>
-                ${car.price.toLocaleString()}
+                {car.price.toLocaleString()} kr
               </Typography>
               
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>

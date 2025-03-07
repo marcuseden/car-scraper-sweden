@@ -23,30 +23,30 @@ function Footer() {
   
   const footerLinks = [
     {
-      title: 'Company',
+      title: 'Företag',
       links: [
-        { name: 'About Us', path: '/about' },
-        { name: 'Our Team', path: '/team' },
-        { name: 'Careers', path: '/careers' },
-        { name: 'Contact', path: '/contact' },
+        { name: 'Om oss', path: '/about' },
+        { name: 'Vårt team', path: '/team' },
+        { name: 'Karriär', path: '/careers' },
+        { name: 'Kontakt', path: '/contact' },
       ],
     },
     {
-      title: 'Services',
+      title: 'Tjänster',
       links: [
-        { name: 'Car Listings', path: '/cars' },
-        { name: 'Sell Your Car', path: '/sell' },
-        { name: 'Car Valuation', path: '/valuation' },
-        { name: 'Car Finance', path: '/finance' },
+        { name: 'Billistor', path: '/cars' },
+        { name: 'Sälj din bil', path: '/sell' },
+        { name: 'Bilvärdering', path: '/valuation' },
+        { name: 'Bilfinansiering', path: '/finance' },
       ],
     },
     {
       title: 'Support',
       links: [
-        { name: 'Help Center', path: '/help' },
-        { name: 'Privacy Policy', path: '/privacy' },
-        { name: 'Terms of Service', path: '/terms' },
-        { name: 'FAQ', path: '/faq' },
+        { name: 'Hjälpcenter', path: '/help' },
+        { name: 'Integritetspolicy', path: '/privacy' },
+        { name: 'Användarvillkor', path: '/terms' },
+        { name: 'Vanliga frågor', path: '/faq' },
       ],
     },
   ];
@@ -68,11 +68,11 @@ function Footer() {
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
               <DirectionsCarIcon sx={{ mr: 1, color: 'primary.main' }} />
               <Typography variant="h6" color="primary.main" fontWeight="bold">
-                Premium Cars
+                Premium Bilar
               </Typography>
             </Box>
             <Typography variant="body2" color="text.secondary" paragraph>
-              Your trusted destination for premium and luxury cars. We connect buyers with the best car deals across the country.
+              Din pålitliga destination för premium- och lyxbilar. Vi kopplar samman köpare med de bästa bilerbjudandena i hela landet.
             </Typography>
             <Box sx={{ mt: 2 }}>
               <IconButton aria-label="facebook" color="primary">
@@ -125,14 +125,14 @@ function Footer() {
         {/* Copyright */}
         <Box sx={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'center' : 'flex-start' }}>
           <Typography variant="body2" color="text.secondary">
-            © {new Date().getFullYear()} Premium Cars. All rights reserved.
+            © {new Date().getFullYear()} Premium Bilar. Alla rättigheter förbehållna.
           </Typography>
           <Box sx={{ display: 'flex', mt: isMobile ? 2 : 0 }}>
             <Link component={RouterLink} to="/privacy" color="text.secondary" sx={{ mx: 1, textDecoration: 'none' }}>
-              Privacy
+              Integritet
             </Link>
             <Link component={RouterLink} to="/terms" color="text.secondary" sx={{ mx: 1, textDecoration: 'none' }}>
-              Terms
+              Villkor
             </Link>
             <Link component={RouterLink} to="/cookies" color="text.secondary" sx={{ mx: 1, textDecoration: 'none' }}>
               Cookies

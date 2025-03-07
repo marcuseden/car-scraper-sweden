@@ -27,6 +27,7 @@ import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ErrorIcon from '@mui/icons-material/Error';
 import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
+import config from '../config';
 
 // Mock data for scraper history
 const scraperHistory = [
@@ -74,13 +75,14 @@ function ScraperPage() {
   const [scraperProgress, setScraperProgress] = useState(0);
   const [conversations, setConversations] = useState([]);
   const [showHistory, setShowHistory] = useState(false);
+  const [voiceInputEnabled] = useState(config.features.enableVoiceInput);
   
   const recognitionRef = useRef(null);
   const conversationEndRef = useRef(null);
   
-  // Initialize speech recognition
+  // Initialize speech recognition if enabled
   useEffect(() => {
-    if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+    if (voiceInputEnabled && ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       recognitionRef.current = new SpeechRecognition();
       recognitionRef.current.continuous = true;
@@ -100,7 +102,7 @@ function ScraperPage() {
         setIsListening(false);
       };
     }
-  }, []);
+  }, [voiceInputEnabled]);
   
   // Scroll to bottom of conversation
   useEffect(() => {
@@ -128,6 +130,11 @@ function ScraperPage() {
   }, [scraperRunning, scraperProgress]);
   
   const toggleListening = () => {
+    if (!voiceInputEnabled) {
+      addBotMessage("Voice input is currently disabled in this environment.");
+      return;
+    }
+    
     if (isListening) {
       recognitionRef.current.stop();
       setIsListening(false);
@@ -339,7 +346,7 @@ function ScraperPage() {
                   multiline
                   maxRows={3}
                   InputProps={{
-                    endAdornment: (
+                    endAdornment: voiceInputEnabled ? (
                       <IconButton 
                         color="primary" 
                         onClick={toggleListening}
@@ -347,7 +354,7 @@ function ScraperPage() {
                       >
                         {isListening ? <MicIcon color="error" /> : <MicOffIcon />}
                       </IconButton>
-                    ),
+                    ) : null,
                   }}
                   sx={{ mr: 1 }}
                 />
@@ -521,6 +528,27 @@ function ScraperPage() {
                     <Chip label="100 miles" variant="outlined" />
                     <Chip label="200 miles" variant="outlined" />
                     <Chip label="Nationwide" variant="outlined" />
+                  </Box>
+                </Box>
+                
+                {/* Settings panel with environment info */}
+                <Box sx={{ mt: 2 }}>
+                  <Typography variant="subtitle2" gutterBottom>
+                    Environment
+                  </Typography>
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 3 }}>
+                    <Chip 
+                      label={config.isProduction ? "Production" : "Development"} 
+                      color={config.isProduction ? "success" : "info"} 
+                    />
+                    <Chip 
+                      label={`Voice Input: ${voiceInputEnabled ? "Enabled" : "Disabled"}`} 
+                      color={voiceInputEnabled ? "success" : "default"} 
+                    />
+                    <Chip 
+                      label={`Max Results: ${config.app.maxSearchResults}`} 
+                      variant="outlined" 
+                    />
                   </Box>
                 </Box>
               </>

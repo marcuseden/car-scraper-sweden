@@ -45,6 +45,36 @@ const sv = {
   featuredListings: 'Utvalda annonser',
   popularSearches: 'Populära sökningar',
   recentlyViewed: 'Nyligen visade',
+  heroTitle: 'Hitta Din Drömbil Idag',
+  heroSubtitle: 'Bläddra bland tusentals premium- och lyxbilar från betrodda säljare över hela landet.',
+  browseCars: 'Bläddra Bland Bilar',
+  featuredCars: 'Utvalda Bilar',
+  featuredCarsSubtitle: 'Upptäck vårt handplockade urval av premiumfordon som erbjuder exceptionellt värde och kvalitet.',
+  viewAllCars: 'Visa Alla Bilar',
+  whyChooseUs: 'Varför Välja Oss',
+  whyChooseUsSubtitle: 'Vi erbjuder en smidig bilköpsupplevelse med funktioner utformade för att göra din resa enklare.',
+  readyToFind: 'Redo att Hitta Din Perfekta Bil?',
+  readyToFindSubtitle: 'Börja bläddra i vår omfattande samling av premiumfordon och hitta den som matchar din stil och dina behov.',
+  startSearching: 'Börja Söka',
+  howItWorks: 'Hur Det Fungerar',
+  howItWorksSubtitle: 'Att hitta din drömbil är enkelt med vår enkla trestegsprocess.',
+  step1Title: 'Beskriv Vad Du Vill Ha',
+  step1Desc: 'Berätta för oss vad du letar efter med naturligt språk eller specifika kriterier.',
+  step2Title: 'Bläddra Bland Resultat',
+  step2Desc: 'Granska matchande bilar från flera källor över hela Sverige och Europa.',
+  step3Title: 'Kontakta Säljare',
+  step3Desc: 'Koppla direkt till säljare för att ordna visningar och slutföra ditt köp.',
+  year: 'År',
+  
+  // Benefits
+  easySearch: 'Enkel Sökning',
+  easySearchDesc: 'Hitta din drömbil med våra kraftfulla sökfilter och intuitiva gränssnitt.',
+  verifiedListings: 'Verifierade Annonser',
+  verifiedListingsDesc: 'Alla våra annonser är verifierade för äkthet och korrekt information.',
+  bestPrices: 'Bästa Priserna',
+  bestPricesDesc: 'Jämför priser från olika säljare för att få bästa möjliga erbjudande.',
+  support: 'Support Dygnet Runt',
+  supportDesc: 'Vårt kundsupportteam finns tillgängligt dygnet runt för att hjälpa dig.',
   
   // Car Listings
   sortBy: 'Sortera efter',
@@ -80,7 +110,6 @@ const sv = {
   dataToCollect: 'Data att samla in',
   price: 'Pris',
   mileage: 'Körsträcka',
-  year: 'År',
   features: 'Funktioner',
   images: 'Bilder',
   sellerInfo: 'Säljarinformation',
@@ -122,6 +151,9 @@ const sv = {
   english: 'Engelska',
   swedish: 'Svenska',
   changeLanguage: 'Byt språk',
+  
+  // Deployment trigger
+  deploymentTrigger: 'Utlös ny driftsättning',
 };
 
 export default sv; 

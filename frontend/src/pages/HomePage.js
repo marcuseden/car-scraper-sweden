@@ -21,12 +21,14 @@ import VerifiedIcon from '@mui/icons-material/Verified';
 import SupportAgentIcon from '@mui/icons-material/SupportAgent';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import { useLanguage } from '../contexts/LanguageContext';
 
 // Placeholder data for featured cars
 const featuredCars = [
   {
     id: 1,
     title: 'BMW 5 Series',
+    titleSv: 'BMW 5-serie',
     price: '450 000 kr',
     year: 2022,
     mileage: '15 000 km',
@@ -36,6 +38,7 @@ const featuredCars = [
   {
     id: 2,
     title: 'Mercedes-Benz E-Class',
+    titleSv: 'Mercedes-Benz E-klass',
     price: '520 000 kr',
     year: 2021,
     mileage: '12 500 km',
@@ -45,6 +48,7 @@ const featuredCars = [
   {
     id: 3,
     title: 'Audi A6',
+    titleSv: 'Audi A6',
     price: '485 000 kr',
     year: 2022,
     mileage: '9 800 km',
@@ -54,6 +58,7 @@ const featuredCars = [
   {
     id: 4,
     title: 'Tesla Model 3',
+    titleSv: 'Tesla Model 3',
     price: '399 000 kr',
     year: 2023,
     mileage: '5 200 km',
@@ -62,34 +67,35 @@ const featuredCars = [
   },
 ];
 
-// Benefits data
-const benefits = [
-  {
-    icon: <SearchIcon fontSize="large" color="primary" />,
-    title: 'Easy Search',
-    description: 'Find your dream car with our powerful search filters and intuitive interface.',
-  },
-  {
-    icon: <VerifiedIcon fontSize="large" color="primary" />,
-    title: 'Verified Listings',
-    description: 'All our listings are verified for authenticity and accurate information.',
-  },
-  {
-    icon: <LocalOfferIcon fontSize="large" color="primary" />,
-    title: 'Best Prices',
-    description: 'Compare prices across different sellers to get the best deal possible.',
-  },
-  {
-    icon: <SupportAgentIcon fontSize="large" color="primary" />,
-    title: '24/7 Support',
-    description: 'Our customer support team is available around the clock to assist you.',
-  },
-];
-
 function HomePage() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const isMedium = useMediaQuery(theme.breakpoints.down('md'));
+  const { t, language } = useLanguage();
+  
+  // Benefits data with translations
+  const benefits = [
+    {
+      icon: <SearchIcon fontSize="large" color="primary" />,
+      title: t('easySearch'),
+      description: t('easySearchDesc'),
+    },
+    {
+      icon: <VerifiedIcon fontSize="large" color="primary" />,
+      title: t('verifiedListings'),
+      description: t('verifiedListingsDesc'),
+    },
+    {
+      icon: <LocalOfferIcon fontSize="large" color="primary" />,
+      title: t('bestPrices'),
+      description: t('bestPricesDesc'),
+    },
+    {
+      icon: <SupportAgentIcon fontSize="large" color="primary" />,
+      title: t('support'),
+      description: t('supportDesc'),
+    },
+  ];
 
   return (
     <Box>
@@ -129,10 +135,10 @@ function HomePage() {
               gutterBottom
               sx={{ fontWeight: 700, fontSize: { xs: '2.5rem', md: '3.5rem' } }}
             >
-              Find Your Dream Car Today
+              {t('heroTitle')}
             </Typography>
             <Typography variant="h5" color="inherit" paragraph sx={{ mb: 4, fontSize: { xs: '1.2rem', md: '1.5rem' } }}>
-              Browse through thousands of premium and luxury cars from trusted sellers across the country.
+              {t('heroSubtitle')}
             </Typography>
             <Button
               variant="contained"
@@ -148,7 +154,7 @@ function HomePage() {
               }}
               startIcon={<SearchIcon />}
             >
-              Browse Cars
+              {t('browseCars')}
             </Button>
           </Box>
         </Container>
@@ -158,10 +164,10 @@ function HomePage() {
       <Container maxWidth="lg" sx={{ mb: 8 }}>
         <Box sx={{ textAlign: 'center', mb: 6 }}>
           <Typography variant="h3" component="h2" gutterBottom sx={{ fontWeight: 700 }}>
-            Featured Cars
+            {t('featuredCars')}
           </Typography>
           <Typography variant="subtitle1" color="text.secondary" sx={{ maxWidth: '700px', mx: 'auto' }}>
-            Discover our handpicked selection of premium vehicles that offer exceptional value and quality.
+            {t('featuredCarsSubtitle')}
           </Typography>
         </Box>
 
@@ -185,18 +191,18 @@ function HomePage() {
                     component="img"
                     height="160"
                     image={car.image}
-                    alt={car.title}
+                    alt={language === 'en' ? car.title : car.titleSv}
                   />
                   <CardContent sx={{ flexGrow: 1 }}>
                     <Typography gutterBottom variant="h6" component="h3" sx={{ fontWeight: 600 }}>
-                      {car.title}
+                      {language === 'en' ? car.title : car.titleSv}
                     </Typography>
                     <Typography variant="h6" color="primary" sx={{ fontWeight: 700, mb: 1 }}>
                       {car.price}
                     </Typography>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                       <Typography variant="body2" color="text.secondary">
-                        Year: {car.year}
+                        {t('year')}: {car.year}
                       </Typography>
                       <Typography variant="body2" color="text.secondary">
                         {car.mileage}
@@ -220,7 +226,7 @@ function HomePage() {
             to="/cars"
             sx={{ borderRadius: '30px', px: 4 }}
           >
-            View All Cars
+            {t('viewAllCars')}
           </Button>
         </Box>
       </Container>
@@ -230,10 +236,10 @@ function HomePage() {
         <Container maxWidth="lg">
           <Box sx={{ textAlign: 'center', mb: 6 }}>
             <Typography variant="h3" component="h2" gutterBottom sx={{ fontWeight: 700 }}>
-              Why Choose Us
+              {t('whyChooseUs')}
             </Typography>
             <Typography variant="subtitle1" color="text.secondary" sx={{ maxWidth: '700px', mx: 'auto' }}>
-              We provide a seamless car buying experience with features designed to make your journey easier.
+              {t('whyChooseUsSubtitle')}
             </Typography>
           </Box>
 
@@ -250,9 +256,7 @@ function HomePage() {
                     alignItems: 'center',
                   }}
                 >
-                  <Box sx={{ mb: 2, display: 'flex', justifyContent: 'center' }}>
-                    {benefit.icon}
-                  </Box>
+                  <Box sx={{ mb: 2 }}>{benefit.icon}</Box>
                   <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
                     {benefit.title}
                   </Typography>
@@ -266,134 +270,147 @@ function HomePage() {
         </Container>
       </Box>
 
-      {/* Car Scraper Promo Section */}
+      {/* CTA Section */}
       <Box
         sx={{
-          py: 8,
           position: 'relative',
-          overflow: 'hidden',
-          bgcolor: 'grey.100',
+          backgroundColor: 'primary.main',
+          color: '#fff',
+          py: 8,
+          mt: 8,
         }}
       >
         <Container maxWidth="lg">
           <Grid container spacing={4} alignItems="center">
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={8}>
               <Typography variant="h3" component="h2" gutterBottom sx={{ fontWeight: 700 }}>
-                Try Our New Car Scraper
+                {t('readyToFind')}
               </Typography>
-              <Typography variant="subtitle1" paragraph sx={{ mb: 4 }}>
-                Looking for a specific type of car? Our intelligent car scraper can find exactly what you're looking for across multiple sources. Just describe what you want in natural language or use voice commands.
+              <Typography variant="h6" paragraph>
+                {t('readyToFindSubtitle')}
               </Typography>
-              <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2 }}>
-                <Button
-                  variant="contained"
-                  size="large"
-                  component={RouterLink}
-                  to="/scraper"
-                  sx={{
-                    py: 1.5,
-                    px: 4,
-                    fontSize: '1.1rem',
-                    borderRadius: '30px',
-                    boxShadow: '0 8px 16px rgba(0, 0, 0, 0.1)',
-                  }}
-                  startIcon={<SearchIcon />}
-                >
-                  Start Scraping
-                </Button>
-                <Button
-                  variant="outlined"
-                  size="large"
-                  sx={{
-                    py: 1.5,
-                    px: 4,
-                    fontSize: '1.1rem',
-                    borderRadius: '30px',
-                  }}
-                >
-                  Learn More
-                </Button>
-              </Box>
             </Grid>
-            <Grid item xs={12} md={6}>
-              <Box
+            <Grid item xs={12} md={4} sx={{ textAlign: { xs: 'left', md: 'right' } }}>
+              <Button
+                variant="contained"
+                size="large"
+                component={RouterLink}
+                to="/scraper"
                 sx={{
-                  position: 'relative',
-                  height: { xs: '300px', md: '400px' },
-                  width: '100%',
-                  borderRadius: 4,
-                  overflow: 'hidden',
-                  boxShadow: '0 16px 32px rgba(0, 0, 0, 0.1)',
+                  py: 1.5,
+                  px: 4,
+                  fontSize: '1.1rem',
+                  borderRadius: '30px',
+                  bgcolor: '#fff',
+                  color: 'primary.main',
+                  '&:hover': {
+                    bgcolor: 'grey.100',
+                  },
                 }}
+                startIcon={<PlayArrowIcon />}
               >
-                <Box
-                  component="img"
-                  src="https://source.unsplash.com/random/600x400/?car-search"
-                  alt="Car Scraper"
-                  sx={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
-                  }}
-                />
-                <Box
-                  sx={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    bgcolor: 'rgba(0,0,0,0.3)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <PlayArrowIcon sx={{ fontSize: 80, color: 'white', opacity: 0.9 }} />
-                </Box>
-              </Box>
+                {t('startSearching')}
+              </Button>
             </Grid>
           </Grid>
         </Container>
       </Box>
 
-      {/* Call to Action */}
-      <Box
-        sx={{
-          bgcolor: 'primary.main',
-          color: 'white',
-          py: 8,
-          textAlign: 'center',
-        }}
-      >
-        <Container maxWidth="md">
-          <Typography variant="h4" component="h2" gutterBottom sx={{ fontWeight: 700 }}>
-            Ready to Find Your Perfect Car?
+      {/* How It Works Section */}
+      <Container maxWidth="lg" sx={{ py: 8 }}>
+        <Box sx={{ textAlign: 'center', mb: 6 }}>
+          <Typography variant="h3" component="h2" gutterBottom sx={{ fontWeight: 700 }}>
+            {t('howItWorks')}
           </Typography>
-          <Typography variant="subtitle1" paragraph sx={{ mb: 4, maxWidth: '700px', mx: 'auto' }}>
-            Start browsing our extensive collection of premium vehicles and find the one that matches your style and needs.
+          <Typography variant="subtitle1" color="text.secondary" sx={{ maxWidth: '700px', mx: 'auto' }}>
+            {t('howItWorksSubtitle')}
           </Typography>
-          <Button
-            variant="contained"
-            size="large"
-            component={RouterLink}
-            to="/cars"
-            sx={{
-              bgcolor: 'white',
-              color: 'primary.main',
-              py: 1.5,
-              px: 4,
-              fontSize: '1.1rem',
-              borderRadius: '30px',
-              '&:hover': {
-                bgcolor: 'grey.100',
-              },
-            }}
-          >
-            Start Searching Now
-          </Button>
-        </Container>
-      </Box>
+        </Box>
+
+        <Grid container spacing={4}>
+          <Grid item xs={12} md={4}>
+            <Box sx={{ textAlign: 'center', p: 2 }}>
+              <Box
+                sx={{
+                  width: 80,
+                  height: 80,
+                  borderRadius: '50%',
+                  bgcolor: 'primary.light',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  mx: 'auto',
+                  mb: 2,
+                }}
+              >
+                <Typography variant="h4" sx={{ color: 'primary.contrastText', fontWeight: 700 }}>
+                  1
+                </Typography>
+              </Box>
+              <Typography variant="h5" gutterBottom sx={{ fontWeight: 600 }}>
+                {t('step1Title')}
+              </Typography>
+              <Typography variant="body1" color="text.secondary">
+                {t('step1Desc')}
+              </Typography>
+            </Box>
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <Box sx={{ textAlign: 'center', p: 2 }}>
+              <Box
+                sx={{
+                  width: 80,
+                  height: 80,
+                  borderRadius: '50%',
+                  bgcolor: 'primary.light',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  mx: 'auto',
+                  mb: 2,
+                }}
+              >
+                <Typography variant="h4" sx={{ color: 'primary.contrastText', fontWeight: 700 }}>
+                  2
+                </Typography>
+              </Box>
+              <Typography variant="h5" gutterBottom sx={{ fontWeight: 600 }}>
+                {t('step2Title')}
+              </Typography>
+              <Typography variant="body1" color="text.secondary">
+                {t('step2Desc')}
+              </Typography>
+            </Box>
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <Box sx={{ textAlign: 'center', p: 2 }}>
+              <Box
+                sx={{
+                  width: 80,
+                  height: 80,
+                  borderRadius: '50%',
+                  bgcolor: 'primary.light',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  mx: 'auto',
+                  mb: 2,
+                }}
+              >
+                <Typography variant="h4" sx={{ color: 'primary.contrastText', fontWeight: 700 }}>
+                  3
+                </Typography>
+              </Box>
+              <Typography variant="h5" gutterBottom sx={{ fontWeight: 600 }}>
+                {t('step3Title')}
+              </Typography>
+              <Typography variant="body1" color="text.secondary">
+                {t('step3Desc')}
+              </Typography>
+            </Box>
+          </Grid>
+        </Grid>
+      </Container>
     </Box>
   );
 }

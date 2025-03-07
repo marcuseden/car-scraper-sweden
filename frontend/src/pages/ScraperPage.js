@@ -152,7 +152,7 @@ function ScraperPage() {
     if (scraperRunning && scraperProgress < 100) {
       interval = setInterval(() => {
         setScraperProgress((prev) => {
-          const increment = Math.floor(Math.random() * 5) + 1;
+          const increment = Math.floor(Math.random() * 3) + 1;
           return Math.min(prev + increment, 100);
         });
       }, 1000);
@@ -280,6 +280,55 @@ function ScraperPage() {
       );
       setScraperRunning(true);
       setScraperProgress(0);
+      
+      // Simulate finding results after a delay
+      setTimeout(() => {
+        if (language === 'en') {
+          addBotMessage("Searching Blocket.se...");
+        } else {
+          addBotMessage("Söker på Blocket.se...");
+        }
+      }, 2000);
+      
+      setTimeout(() => {
+        if (language === 'en') {
+          addBotMessage("Searching Bytbil.com...");
+        } else {
+          addBotMessage("Söker på Bytbil.com...");
+        }
+      }, 5000);
+      
+      setTimeout(() => {
+        if (language === 'en') {
+          addBotMessage("Searching Bilweb.se...");
+        } else {
+          addBotMessage("Söker på Bilweb.se...");
+        }
+      }, 8000);
+      
+      setTimeout(() => {
+        if (language === 'en') {
+          addBotMessage("Found 12 matching cars on Blocket.se");
+        } else {
+          addBotMessage("Hittade 12 matchande bilar på Blocket.se");
+        }
+      }, 12000);
+      
+      setTimeout(() => {
+        if (language === 'en') {
+          addBotMessage("Found 8 matching cars on Bytbil.com");
+        } else {
+          addBotMessage("Hittade 8 matchande bilar på Bytbil.com");
+        }
+      }, 15000);
+      
+      setTimeout(() => {
+        if (language === 'en') {
+          addBotMessage("Found 17 matching cars on Bilweb.se");
+        } else {
+          addBotMessage("Hittade 17 matchande bilar på Bilweb.se");
+        }
+      }, 18000);
     } else {
       addBotMessage(language === 'en'
         ? "Please describe what type of cars you want to search for first."

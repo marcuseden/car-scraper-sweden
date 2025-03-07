@@ -16,37 +16,39 @@ import TwitterIcon from '@mui/icons-material/Twitter';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
+import { useLanguage } from '../contexts/LanguageContext';
 
 function Footer() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const { t } = useLanguage();
   
   const footerLinks = [
     {
-      title: 'Företag',
+      title: t('company'),
       links: [
-        { name: 'Om oss', path: '/about' },
-        { name: 'Vårt team', path: '/team' },
-        { name: 'Karriär', path: '/careers' },
-        { name: 'Kontakt', path: '/contact' },
+        { name: t('aboutUs'), path: '/about' },
+        { name: t('ourTeam'), path: '/team' },
+        { name: t('careers'), path: '/careers' },
+        { name: t('contact'), path: '/contact' },
       ],
     },
     {
-      title: 'Tjänster',
+      title: t('services'),
       links: [
-        { name: 'Billistor', path: '/cars' },
-        { name: 'Sälj din bil', path: '/sell' },
-        { name: 'Bilvärdering', path: '/valuation' },
-        { name: 'Bilfinansiering', path: '/finance' },
+        { name: t('carListings'), path: '/cars' },
+        { name: t('sellYourCar'), path: '/sell' },
+        { name: t('carValuation'), path: '/valuation' },
+        { name: t('carFinance'), path: '/finance' },
       ],
     },
     {
-      title: 'Support',
+      title: t('support'),
       links: [
-        { name: 'Hjälpcenter', path: '/help' },
-        { name: 'Integritetspolicy', path: '/privacy' },
-        { name: 'Användarvillkor', path: '/terms' },
-        { name: 'Vanliga frågor', path: '/faq' },
+        { name: t('helpCenter'), path: '/help' },
+        { name: t('privacyPolicy'), path: '/privacy' },
+        { name: t('termsOfService'), path: '/terms' },
+        { name: t('faq'), path: '/faq' },
       ],
     },
   ];
@@ -68,11 +70,11 @@ function Footer() {
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
               <DirectionsCarIcon sx={{ mr: 1, color: 'primary.main' }} />
               <Typography variant="h6" color="primary.main" fontWeight="bold">
-                Premium Bilar
+                {t('companyName')}
               </Typography>
             </Box>
             <Typography variant="body2" color="text.secondary" paragraph>
-              Din pålitliga destination för premium- och lyxbilar. Vi kopplar samman köpare med de bästa bilerbjudandena i hela landet.
+              {t('companyDescription')}
             </Typography>
             <Box sx={{ mt: 2 }}>
               <IconButton aria-label="facebook" color="primary">
@@ -125,14 +127,14 @@ function Footer() {
         {/* Copyright */}
         <Box sx={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'center' : 'flex-start' }}>
           <Typography variant="body2" color="text.secondary">
-            © {new Date().getFullYear()} Premium Bilar. Alla rättigheter förbehållna.
+            © {new Date().getFullYear()} {t('companyName')}. {t('allRightsReserved')}.
           </Typography>
           <Box sx={{ display: 'flex', mt: isMobile ? 2 : 0 }}>
             <Link component={RouterLink} to="/privacy" color="text.secondary" sx={{ mx: 1, textDecoration: 'none' }}>
-              Integritet
+              {t('privacy')}
             </Link>
             <Link component={RouterLink} to="/terms" color="text.secondary" sx={{ mx: 1, textDecoration: 'none' }}>
-              Villkor
+              {t('terms')}
             </Link>
             <Link component={RouterLink} to="/cookies" color="text.secondary" sx={{ mx: 1, textDecoration: 'none' }}>
               Cookies

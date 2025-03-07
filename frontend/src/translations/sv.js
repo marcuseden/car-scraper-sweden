@@ -1,0 +1,127 @@
+// Swedish translations
+const sv = {
+  // Common
+  companyName: 'CarFinder',
+  loading: 'Laddar...',
+  error: 'Fel',
+  success: 'Framgång',
+  cancel: 'Avbryt',
+  save: 'Spara',
+  edit: 'Redigera',
+  delete: 'Radera',
+  search: 'Sök',
+  filter: 'Filtrera',
+  sort: 'Sortera',
+  view: 'Visa',
+  more: 'Mer',
+  less: 'Mindre',
+  all: 'Alla',
+  
+  // Navigation
+  home: 'Hem',
+  carListings: 'Billistor',
+  favorites: 'Favoriter',
+  compare: 'Jämför',
+  account: 'Konto',
+  settings: 'Inställningar',
+  
+  // Footer
+  company: 'Företag',
+  aboutUs: 'Om oss',
+  contactUs: 'Kontakta oss',
+  careers: 'Karriär',
+  press: 'Press',
+  blog: 'Blogg',
+  help: 'Hjälp',
+  faq: 'Vanliga frågor',
+  support: 'Support',
+  terms: 'Villkor',
+  privacy: 'Integritet',
+  cookies: 'Cookies',
+  copyright: '© 2023 CarFinder. Alla rättigheter förbehållna.',
+  
+  // Home Page
+  welcomeMessage: 'Hitta din perfekta bil',
+  featuredListings: 'Utvalda annonser',
+  popularSearches: 'Populära sökningar',
+  recentlyViewed: 'Nyligen visade',
+  
+  // Car Listings
+  sortBy: 'Sortera efter',
+  priceHighToLow: 'Pris: Högt till lågt',
+  priceLowToHigh: 'Pris: Lågt till högt',
+  newest: 'Nyast först',
+  oldest: 'Äldst först',
+  mileageLowToHigh: 'Körsträcka: Låg till hög',
+  mileageHighToLow: 'Körsträcka: Hög till låg',
+  
+  // Car Details
+  specifications: 'Specifikationer',
+  features: 'Funktioner',
+  contactSeller: 'Kontakta säljaren',
+  similarCars: 'Liknande bilar',
+  
+  // Scraper Page
+  scraperTitle: 'Bilsökningsverktyg',
+  scraperDescription: 'Beskriv vilka bilar du vill söka efter, så hittar vårt system dem åt dig. Du kan använda naturligt språk för att ange märke, modell, årsintervall, prisintervall, körsträcka och andra funktioner.',
+  scraperAssistant: 'Bilsökningsassistent',
+  startConversation: 'Starta en konversation genom att beskriva vilka bilar du vill söka efter.',
+  trySaying: 'Prova att säga något som:',
+  send: 'Skicka',
+  scraperControls: 'Sökkontroller',
+  progress: 'Framsteg',
+  startSearch: 'Starta sökning',
+  stopSearch: 'Stoppa sökning',
+  searchHistory: 'Sökhistorik',
+  searchSettings: 'Sökinställningar',
+  recentActivities: 'Dina senaste sökaktiviteter:',
+  configureSettings: 'Konfigurera dina sökinställningar:',
+  sourcesToSearch: 'Källor att söka i',
+  dataToCollect: 'Data att samla in',
+  price: 'Pris',
+  mileage: 'Körsträcka',
+  year: 'År',
+  features: 'Funktioner',
+  images: 'Bilder',
+  sellerInfo: 'Säljarinformation',
+  historyReport: 'Historikrapport',
+  location: 'Plats',
+  enterZipCode: 'Ange postnummer eller stad',
+  searchRadius: 'Sökradie',
+  nationwide: 'Hela Sverige',
+  
+  // Scraper Config
+  scraperConfiguration: 'Skrapkonfiguration',
+  scraperConfigDescription: 'Konfigurera vilka bilannonsplatser som ska skrapas och hur ofta skraparen ska köras. Ändringar träder i kraft vid nästa schemalagda körning.',
+  scraperSources: 'Skrapkällor',
+  scrapingSettings: 'Skrapinställningar',
+  scrapingInterval: 'Skrapintervall',
+  hourly: 'Varje timme',
+  daily: 'Dagligen',
+  weekly: 'Veckovis',
+  manualOnly: 'Endast manuellt',
+  maxResultsPerSite: 'Max resultat per sida',
+  saveImages: 'Spara bilder',
+  advancedSettings: 'Avancerade inställningar',
+  useProxy: 'Använd proxy',
+  proxyUrl: 'Proxy-URL',
+  userAgent: 'User Agent',
+  resetDefaults: 'Återställ standardvärden',
+  saveConfiguration: 'Spara konfiguration',
+  configSaved: 'Konfigurationen har sparats!',
+  
+  // Car type suggestions
+  luxuryCars: 'Lyxbilar under 500 000 kr',
+  electricSUVs: 'Elektriska SUV:ar med över 400 km räckvidd',
+  sportsCars: 'Sportbilar med manuell växellåda',
+  familyCars: 'Familjebilar med underhållningssystem',
+  hybridCars: 'Hybridbilar med läderklädsel',
+  
+  // Language
+  language: 'Språk',
+  english: 'Engelska',
+  swedish: 'Svenska',
+  changeLanguage: 'Byt språk',
+};
+
+export default sv; 

@@ -17,18 +17,21 @@ import {
 import MenuIcon from '@mui/icons-material/Menu';
 import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
 import SearchIcon from '@mui/icons-material/Search';
-
-const pages = [
-  { name: 'Hem', path: '/' },
-  { name: 'Billistor', path: '/cars' },
-  { name: 'Bilsökare', path: '/scraper' },
-];
+import LanguageSwitcher from './LanguageSwitcher';
+import { useLanguage } from '../contexts/LanguageContext';
 
 function Header() {
   const [anchorElNav, setAnchorElNav] = useState(null);
   const location = useLocation();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const { t } = useLanguage();
+
+  const pages = [
+    { name: t('home'), path: '/' },
+    { name: t('carListings'), path: '/cars' },
+    { name: t('carScraper'), path: '/scraper' },
+  ];
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -63,7 +66,7 @@ function Header() {
               textDecoration: 'none',
             }}
           >
-            Premium Bilar
+            {t('companyName')}
           </Typography>
 
           {/* Mobile menu */}
@@ -132,7 +135,7 @@ function Header() {
               textDecoration: 'none',
             }}
           >
-            Premium Bilar
+            {t('companyName')}
           </Typography>
 
           {/* Desktop menu */}
@@ -158,7 +161,8 @@ function Header() {
           </Box>
 
           {/* Right side of the header */}
-          <Box sx={{ flexGrow: 0, display: 'flex', gap: 2 }}>
+          <Box sx={{ flexGrow: 0, display: 'flex', gap: 2, alignItems: 'center' }}>
+            <LanguageSwitcher />
             <Button 
               variant="contained" 
               color="primary"
@@ -167,12 +171,11 @@ function Header() {
               sx={{ 
                 display: { xs: 'none', sm: 'block' },
                 borderRadius: '20px',
-                px: 3,
-                mr: 2
+                px: 3
               }}
               startIcon={<SearchIcon />}
             >
-              Starta Sökning
+              {t('startScraper')}
             </Button>
             <Button 
               variant="outlined" 
@@ -185,7 +188,7 @@ function Header() {
                 px: 3
               }}
             >
-              Hitta Bilar
+              {t('findCars')}
             </Button>
           </Box>
         </Toolbar>

@@ -1,115 +1,79 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { ThemeProvider, createTheme, responsiveFontSizes } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import App from './App';
 import './styles/index.css';
+import { LanguageProvider } from './contexts/LanguageContext';
 
-// Create a responsive theme with primary and secondary colors
-const theme = createTheme({
+// Create a responsive theme
+let theme = createTheme({
   palette: {
     primary: {
-      main: '#1976d2', // Blue
+      main: '#1976d2',
       light: '#4791db',
       dark: '#115293',
       contrastText: '#fff',
     },
     secondary: {
-      main: '#f50057', // Pink
-      light: '#f73378',
-      dark: '#ab003c',
+      main: '#dc004e',
+      light: '#e33371',
+      dark: '#9a0036',
       contrastText: '#fff',
     },
     background: {
       default: '#f5f5f5',
-      paper: '#ffffff',
     },
   },
   typography: {
     fontFamily: [
-      '-apple-system',
-      'BlinkMacSystemFont',
-      '"Segoe UI"',
       'Roboto',
       '"Helvetica Neue"',
       'Arial',
       'sans-serif',
     ].join(','),
     h1: {
-      fontSize: '2.5rem',
-      fontWeight: 600,
-      '@media (max-width:600px)': {
-        fontSize: '2rem',
-      },
+      fontWeight: 700,
     },
     h2: {
-      fontSize: '2rem',
-      fontWeight: 500,
-      '@media (max-width:600px)': {
-        fontSize: '1.75rem',
-      },
+      fontWeight: 600,
     },
     h3: {
-      fontSize: '1.75rem',
-      fontWeight: 500,
-      '@media (max-width:600px)': {
-        fontSize: '1.5rem',
-      },
+      fontWeight: 600,
     },
     h4: {
-      fontSize: '1.5rem',
-      fontWeight: 500,
-      '@media (max-width:600px)': {
-        fontSize: '1.25rem',
-      },
+      fontWeight: 600,
     },
     h5: {
-      fontSize: '1.25rem',
       fontWeight: 500,
-      '@media (max-width:600px)': {
-        fontSize: '1.1rem',
-      },
     },
     h6: {
-      fontSize: '1.1rem',
       fontWeight: 500,
-      '@media (max-width:600px)': {
-        fontSize: '1rem',
-      },
     },
   },
   components: {
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: 8,
           textTransform: 'none',
-          fontWeight: 600,
+          fontWeight: 500,
         },
       },
     },
     MuiCard: {
       styleOverrides: {
         root: {
-          borderRadius: 12,
-          boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-          overflow: 'hidden',
-        },
-      },
-    },
-    MuiCardMedia: {
-      styleOverrides: {
-        root: {
-          transition: 'transform 0.3s ease-in-out',
-          '&:hover': {
-            transform: 'scale(1.05)',
-          },
+          borderRadius: 8,
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
         },
       },
     },
   },
 });
+
+// Make the theme responsive
+theme = responsiveFontSizes(theme);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -117,7 +81,9 @@ root.render(
     <BrowserRouter>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <App />
+        <LanguageProvider>
+          <App />
+        </LanguageProvider>
       </ThemeProvider>
     </BrowserRouter>
   </React.StrictMode>

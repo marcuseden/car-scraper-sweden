@@ -6,7 +6,7 @@
     "frontend"
   ],
   "scripts": {
-    "build": "cd frontend && npm install --legacy-peer-deps && npm run build",
+    "build": "cd frontend && npm install --legacy-peer-deps && npm run build && cp -r build ../build",
     "start": "cd frontend && npm start"
   }
 } 

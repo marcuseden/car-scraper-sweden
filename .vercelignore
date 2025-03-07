@@ -1,0 +1,14 @@
+# Ignore everything except the frontend directory and configuration files
+**/node_modules
+**/.git
+**/README.md
+**/LICENSE
+**/.vscode
+**/.idea
+**/.DS_Store
+
+# Don't ignore these
+!frontend/
+!package.json
+!vercel.json
+!.vercelignore 

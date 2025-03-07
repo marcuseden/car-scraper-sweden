@@ -90,6 +90,13 @@ const sv = {
   features: 'Funktioner',
   contactSeller: 'Kontakta säljaren',
   similarCars: 'Liknande bilar',
+  yourName: 'Ditt namn',
+  email: 'E-post',
+  phone: 'Telefon',
+  message: 'Meddelande',
+  sendMessage: 'Skicka meddelande',
+  orContactDirectly: 'Eller kontakta direkt',
+  emailSeller: 'Maila säljaren',
   
   // Scraper Page
   scraperTitle: 'Bilsökningsverktyg',
@@ -110,7 +117,6 @@ const sv = {
   dataToCollect: 'Data att samla in',
   price: 'Pris',
   mileage: 'Körsträcka',
-  features: 'Funktioner',
   images: 'Bilder',
   sellerInfo: 'Säljarinformation',
   historyReport: 'Historikrapport',

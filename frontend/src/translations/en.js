@@ -90,6 +90,13 @@ const en = {
   features: 'Features',
   contactSeller: 'Contact Seller',
   similarCars: 'Similar Cars',
+  yourName: 'Your Name',
+  email: 'Email',
+  phone: 'Phone',
+  message: 'Message',
+  sendMessage: 'Send Message',
+  orContactDirectly: 'Or contact directly',
+  emailSeller: 'Email Seller',
   
   // Scraper Page
   scraperTitle: 'Car Search Tool',

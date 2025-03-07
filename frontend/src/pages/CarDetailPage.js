@@ -19,6 +19,8 @@ import {
   Typography,
   useTheme,
   useMediaQuery,
+  Snackbar,
+  Alert,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import FavoriteIcon from '@mui/icons-material/Favorite';
@@ -35,6 +37,7 @@ import PhoneIcon from '@mui/icons-material/Phone';
 import EmailIcon from '@mui/icons-material/Email';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import { useLanguage } from '../contexts/LanguageContext';
 
 // Placeholder car data
 const carData = {
@@ -118,6 +121,7 @@ function CarDetailPage() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const isMedium = useMediaQuery(theme.breakpoints.down('md'));
+  const { t, language } = useLanguage();
   
   const [car, setCar] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -128,8 +132,10 @@ function CarDetailPage() {
     name: '',
     email: '',
     phone: '',
-    message: 'I am interested in this BMW 5 Series 530i M Sport. Please contact me with more information.',
+    message: '',
   });
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
 
   // Fetch car data
   useEffect(() => {
@@ -139,8 +145,16 @@ function CarDetailPage() {
       setCar(carData);
       setFavorite(carData.favorite);
       setLoading(false);
+      
+      // Set default message based on language
+      setContactForm(prev => ({
+        ...prev,
+        message: language === 'en' 
+          ? `I am interested in this ${carData.title}. Please contact me with more information.`
+          : `Jag är intresserad av denna ${carData.title}. Vänligen kontakta mig med mer information.`
+      }));
     }, 500);
-  }, [id]);
+  }, [id, language]);
 
   // Handle tab change
   const handleTabChange = (event, newValue) => {
@@ -169,8 +183,32 @@ function CarDetailPage() {
   // Handle contact form submission
   const handleContactSubmit = (e) => {
     e.preventDefault();
+    
     // In a real app, this would send the form data to an API
-    alert('Your message has been sent! The seller will contact you shortly.');
+    // For now, we'll just simulate a successful submission
+    
+    // Show success message based on language
+    const message = language === 'en'
+      ? 'Your message has been sent! The seller will contact you shortly.'
+      : 'Ditt meddelande har skickats! Säljaren kommer att kontakta dig inom kort.';
+    
+    setSnackbarMessage(message);
+    setSnackbarOpen(true);
+    
+    // Reset form
+    setContactForm({
+      name: '',
+      email: '',
+      phone: '',
+      message: language === 'en' 
+        ? `I am interested in this ${car.title}. Please contact me with more information.`
+        : `Jag är intresserad av denna ${car.title}. Vänligen kontakta mig med mer information.`,
+    });
+  };
+  
+  // Handle snackbar close
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
   };
 
   if (loading) {
@@ -569,13 +607,13 @@ function CarDetailPage() {
               
               {/* Contact Form */}
               <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-                Contact Seller
+                {t('contactSeller')}
               </Typography>
               
               <Box component="form" onSubmit={handleContactSubmit} sx={{ mt: 2 }}>
                 <TextField
                   fullWidth
-                  label="Your Name"
+                  label={t('yourName')}
                   name="name"
                   value={contactForm.name}
                   onChange={handleContactFormChange}
@@ -585,7 +623,7 @@ function CarDetailPage() {
                 />
                 <TextField
                   fullWidth
-                  label="Email"
+                  label={t('email')}
                   name="email"
                   type="email"
                   value={contactForm.email}
@@ -596,7 +634,7 @@ function CarDetailPage() {
                 />
                 <TextField
                   fullWidth
-                  label="Phone"
+                  label={t('phone')}
                   name="phone"
                   value={contactForm.phone}
                   onChange={handleContactFormChange}
@@ -605,7 +643,7 @@ function CarDetailPage() {
                 />
                 <TextField
                   fullWidth
-                  label="Message"
+                  label={t('message')}
                   name="message"
                   value={contactForm.message}
                   onChange={handleContactFormChange}
@@ -624,7 +662,7 @@ function CarDetailPage() {
                   sx={{ mt: 2, py: 1.5 }}
                   className="pulse-button"
                 >
-                  Send Message
+                  {t('sendMessage')}
                 </Button>
               </Box>
               
@@ -632,7 +670,7 @@ function CarDetailPage() {
               
               {/* Direct Contact */}
               <Typography variant="subtitle2" gutterBottom>
-                Or contact directly:
+                {t('orContactDirectly')}
               </Typography>
               <Button
                 fullWidth
@@ -651,12 +689,24 @@ function CarDetailPage() {
                 component="a"
                 href={`mailto:${car.seller.email}`}
               >
-                Email Seller
+                {t('emailSeller')}
               </Button>
             </CardContent>
           </Card>
         </Grid>
       </Grid>
+
+      {/* Snackbar for form submission feedback */}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert onClose={handleSnackbarClose} severity="success" sx={{ width: '100%' }}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Container>
   );
 }

@@ -1,12 +1,12 @@
 {
-  "name": "premium-cars",
+  "name": "car-scraper-sweden",
   "version": "1.0.0",
   "private": true,
   "workspaces": [
     "frontend"
   ],
   "scripts": {
-    "build": "cd frontend && npm install --legacy-peer-deps && npm run build && cp -r build ../build",
-    "start": "cd frontend && npm start"
+    "build": "cd frontend && npm run build",
+    "vercel-build": "cd frontend && npm run vercel-build"
   }
 } 

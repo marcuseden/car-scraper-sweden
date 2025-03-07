@@ -1,0 +1,142 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f5f5f5;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Mobile-friendly adjustments */
+@media (max-width: 600px) {
+  .MuiContainer-root {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+}
+
+/* Animation for page transitions */
+.page-enter {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.page-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 300ms, transform 300ms;
+}
+
+.page-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.page-exit-active {
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: opacity 300ms, transform 300ms;
+}
+
+/* Price comparison styles */
+.price-below-average {
+  color: #4caf50; /* Green */
+}
+
+.price-average {
+  color: #ff9800; /* Orange */
+}
+
+.price-above-average {
+  color: #f44336; /* Red */
+}
+
+/* Image gallery styles */
+.image-gallery {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.image-gallery-slide {
+  transition: transform 0.3s ease-in-out;
+}
+
+/* Card hover effects */
+.car-card {
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.car-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+}
+
+/* Search bar styles */
+.search-bar {
+  border-radius: 24px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: box-shadow 0.3s ease;
+}
+
+.search-bar:focus-within {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* Filter chip styles */
+.filter-chip {
+  margin: 4px;
+  transition: all 0.2s ease;
+}
+
+.filter-chip:hover {
+  background-color: rgba(25, 118, 210, 0.1);
+}
+
+/* Contact button pulse animation */
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(245, 0, 87, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(245, 0, 87, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(245, 0, 87, 0);
+  }
+}
+
+.contact-button {
+  animation: pulse 2s infinite;
+} 

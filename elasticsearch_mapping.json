@@ -1,0 +1,148 @@
+{
+  "settings": {
+    "number_of_shards": 1,
+    "number_of_replicas": 0,
+    "analysis": {
+      "analyzer": {
+        "car_analyzer": {
+          "type": "custom",
+          "tokenizer": "standard",
+          "filter": ["lowercase", "asciifolding", "car_synonym"]
+        }
+      },
+      "filter": {
+        "car_synonym": {
+          "type": "synonym",
+          "synonyms": [
+            "porsche, porche, porshe",
+            "911, nine eleven",
+            "cayenne, cayen",
+            "panamera, panamara",
+            "macan, makan",
+            "taycan, taican",
+            "boxster, boxter",
+            "cayman, caiman",
+            "automatic, automatisk, automat",
+            "manual, manuell",
+            "gasoline, petrol, bensin",
+            "diesel, disel",
+            "electric, elektrisk, el",
+            "hybrid, hybrid"
+          ]
+        }
+      }
+    }
+  },
+  "mappings": {
+    "properties": {
+      "id": { "type": "keyword" },
+      "url": { "type": "keyword" },
+      
+      "title": { 
+        "type": "text",
+        "analyzer": "car_analyzer",
+        "fields": {
+          "keyword": { "type": "keyword" }
+        }
+      },
+      
+      "price": { "type": "integer" },
+      "price_text": { "type": "text" },
+      "price_range": { "type": "keyword" },
+      "vat_price": { "type": "integer" },
+      "financing_monthly": { "type": "integer" },
+      
+      "location": { 
+        "type": "text",
+        "fields": {
+          "keyword": { "type": "keyword" }
+        }
+      },
+      "city": { "type": "keyword" },
+      "region": { "type": "keyword" },
+      
+      "make": { 
+        "type": "text",
+        "analyzer": "car_analyzer",
+        "fields": {
+          "keyword": { "type": "keyword" }
+        }
+      },
+      
+      "model": { 
+        "type": "text",
+        "analyzer": "car_analyzer",
+        "fields": {
+          "keyword": { "type": "keyword" }
+        }
+      },
+      
+      "year": { "type": "integer" },
+      "mileage": { "type": "integer" },
+      "fuel_type": { "type": "keyword" },
+      "transmission": { "type": "keyword" },
+      "engine": { "type": "text" },
+      "color": { "type": "keyword" },
+      
+      "description": { 
+        "type": "text",
+        "analyzer": "car_analyzer" 
+      },
+      "description_length": { "type": "integer" },
+      
+      "search_text": { 
+        "type": "text",
+        "analyzer": "car_analyzer" 
+      },
+      
+      "keywords": { "type": "keyword" },
+      
+      "specifications": { 
+        "type": "object",
+        "enabled": false
+      },
+      
+      "specs": { "type": "object" },
+      
+      "tags": { "type": "keyword" },
+      
+      "seller": { 
+        "type": "object",
+        "properties": {
+          "name": { "type": "text" },
+          "type": { "type": "keyword" },
+          "info": { "type": "text" }
+        }
+      },
+      
+      "seller_type": { "type": "keyword" },
+      
+      "scrape_date": { "type": "date" },
+      "scrape_timestamp": { "type": "date", "format": "epoch_second" },
+      "publication_date": { "type": "text" },
+      "publication_timestamp": { "type": "date", "format": "epoch_second" },
+      
+      "active": { "type": "boolean" },
+      "indexed": { "type": "boolean" },
+      
+      "has_images": { "type": "boolean" },
+      "image_count": { "type": "integer" },
+      "primary_image": { "type": "keyword" },
+      
+      "images": {
+        "type": "nested",
+        "properties": {
+          "id": { "type": "keyword" },
+          "url": { "type": "keyword" },
+          "position": { "type": "integer" },
+          "is_primary": { "type": "boolean" },
+          "filename": { "type": "keyword" },
+          "local_path": { "type": "keyword" },
+          "downloaded": { "type": "boolean" }
+        }
+      },
+      
+      "image_urls": { "type": "keyword" }
+    }
+  }
+} 

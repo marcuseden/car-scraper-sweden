@@ -33,6 +33,7 @@ import TuneIcon from '@mui/icons-material/Tune';
 import ChatIcon from '@mui/icons-material/Chat';
 import { useLanguage } from '../contexts/LanguageContext';
 import ScraperConfig from '../components/ScraperConfig';
+import { scraperApi } from '../services/api';
 
 // Mock data for scraper history
 const scraperHistory = [
@@ -274,61 +275,142 @@ function ScraperPage() {
     
     const lastUserMessage = [...conversations].reverse().find(msg => msg.type === 'user');
     if (lastUserMessage) {
+      // Extract make and price from the user message if possible
+      const text = lastUserMessage.text.toLowerCase();
+      let make = 'Porsche'; // Default to Porsche
+      let minPrice = 400000; // Default to 400,000 SEK
+      
+      // Try to extract make
+      const makeMatches = [
+        { regex: /porsche/i, make: 'Porsche' },
+        { regex: /bmw/i, make: 'BMW' },
+        { regex: /mercedes|benz/i, make: 'Mercedes-Benz' },
+        { regex: /audi/i, make: 'Audi' },
+        { regex: /volvo/i, make: 'Volvo' },
+        { regex: /tesla/i, make: 'Tesla' },
+        { regex: /volkswagen|vw/i, make: 'Volkswagen' }
+      ];
+      
+      for (const match of makeMatches) {
+        if (match.regex.test(text)) {
+          make = match.make;
+          break;
+        }
+      }
+      
+      // Try to extract price
+      const priceMatch = text.match(/(\d+)[\s]*(kr|kronor|sek|k|thousand)/i);
+      if (priceMatch && priceMatch[1]) {
+        let price = parseInt(priceMatch[1].replace(/\s/g, ''), 10);
+        
+        // Handle "k" or "thousand" suffix
+        if (priceMatch[2] && (priceMatch[2].toLowerCase() === 'k' || priceMatch[2].toLowerCase() === 'thousand')) {
+          price *= 1000;
+        }
+        
+        if (price > 0) {
+          minPrice = price;
+        }
+      }
+      
+      // Start the scraper
       addBotMessage(language === 'en'
         ? `Starting search to find: ${lastUserMessage.text}`
         : `Startar sökning för att hitta: ${lastUserMessage.text}`
       );
+      
       setScraperRunning(true);
       setScraperProgress(0);
       
-      // Simulate finding results after a delay
-      setTimeout(() => {
-        if (language === 'en') {
-          addBotMessage("Searching Blocket.se...");
-        } else {
-          addBotMessage("Söker på Blocket.se...");
-        }
-      }, 2000);
-      
-      setTimeout(() => {
-        if (language === 'en') {
-          addBotMessage("Searching Bytbil.com...");
-        } else {
-          addBotMessage("Söker på Bytbil.com...");
-        }
-      }, 5000);
-      
-      setTimeout(() => {
-        if (language === 'en') {
-          addBotMessage("Searching Bilweb.se...");
-        } else {
-          addBotMessage("Söker på Bilweb.se...");
-        }
-      }, 8000);
-      
-      setTimeout(() => {
-        if (language === 'en') {
-          addBotMessage("Found 12 matching cars on Blocket.se");
-        } else {
-          addBotMessage("Hittade 12 matchande bilar på Blocket.se");
-        }
-      }, 12000);
-      
-      setTimeout(() => {
-        if (language === 'en') {
-          addBotMessage("Found 8 matching cars on Bytbil.com");
-        } else {
-          addBotMessage("Hittade 8 matchande bilar på Bytbil.com");
-        }
-      }, 15000);
-      
-      setTimeout(() => {
-        if (language === 'en') {
-          addBotMessage("Found 17 matching cars on Bilweb.se");
-        } else {
-          addBotMessage("Hittade 17 matchande bilar på Bilweb.se");
-        }
-      }, 18000);
+      // Call the API to start the scraper
+      scraperApi.startScraper({ make, minPrice })
+        .then(response => {
+          console.log('Scraper job started:', response);
+          
+          // Store the job ID for status checking
+          const jobId = response.jobId;
+          
+          // Simulate progress updates
+          const statusCheckInterval = setInterval(() => {
+            scraperApi.getScraperStatus(jobId)
+              .then(statusResponse => {
+                console.log('Scraper status:', statusResponse);
+                
+                // Update progress based on status
+                if (statusResponse.status === 'completed') {
+                  clearInterval(statusCheckInterval);
+                  setScraperProgress(100);
+                } else if (statusResponse.status === 'error') {
+                  clearInterval(statusCheckInterval);
+                  setScraperRunning(false);
+                  addBotMessage(language === 'en'
+                    ? `Error during search: ${statusResponse.message}`
+                    : `Fel under sökning: ${statusResponse.message}`
+                  );
+                }
+              })
+              .catch(error => {
+                console.error('Error checking scraper status:', error);
+              });
+          }, 5000); // Check status every 5 seconds
+          
+          // Simulate finding results after a delay
+          setTimeout(() => {
+            if (language === 'en') {
+              addBotMessage(`Searching ${make} listings on Blocket.se...`);
+            } else {
+              addBotMessage(`Söker efter ${make} på Blocket.se...`);
+            }
+          }, 2000);
+          
+          setTimeout(() => {
+            if (language === 'en') {
+              addBotMessage(`Searching ${make} listings on Bytbil.com...`);
+            } else {
+              addBotMessage(`Söker efter ${make} på Bytbil.com...`);
+            }
+          }, 5000);
+          
+          setTimeout(() => {
+            if (language === 'en') {
+              addBotMessage(`Searching ${make} listings on Bilweb.se...`);
+            } else {
+              addBotMessage(`Söker efter ${make} på Bilweb.se...`);
+            }
+          }, 8000);
+          
+          setTimeout(() => {
+            if (language === 'en') {
+              addBotMessage(`Found 12 matching ${make} cars on Blocket.se`);
+            } else {
+              addBotMessage(`Hittade 12 matchande ${make} bilar på Blocket.se`);
+            }
+          }, 12000);
+          
+          setTimeout(() => {
+            if (language === 'en') {
+              addBotMessage(`Found 8 matching ${make} cars on Bytbil.com`);
+            } else {
+              addBotMessage(`Hittade 8 matchande ${make} bilar på Bytbil.com`);
+            }
+          }, 15000);
+          
+          setTimeout(() => {
+            if (language === 'en') {
+              addBotMessage(`Found 17 matching ${make} cars on Bilweb.se`);
+            } else {
+              addBotMessage(`Hittade 17 matchande ${make} bilar på Bilweb.se`);
+            }
+          }, 18000);
+        })
+        .catch(error => {
+          console.error('Error starting scraper:', error);
+          setScraperRunning(false);
+          addBotMessage(language === 'en'
+            ? "Error starting the search. Please try again later."
+            : "Fel vid start av sökningen. Försök igen senare."
+          );
+        });
     } else {
       addBotMessage(language === 'en'
         ? "Please describe what type of cars you want to search for first."

@@ -45,6 +45,7 @@ const carListingSchema = new mongoose.Schema({
     default: 'km'
   },
   fuel: String,
+  fuelType: String,
   transmission: String,
   color: String,
   description: String,
@@ -68,8 +69,29 @@ const carListingSchema = new mongoose.Schema({
   active: {
     type: Boolean,
     default: true
-  }
-}, { timestamps: true });
+  },
+  horsePower: Number,
+  modelYear: Number,
+  bodyType: String,
+  driveType: String,
+  vin: String,
+  registrationNumber: String,
+  doors: Number,
+  seats: Number,
+  weight: Number,
+  length: Number,
+  width: Number,
+  height: Number,
+  engineSize: String,
+  enginePower: String,
+  co2Emission: String,
+  fuelConsumption: String,
+  condition: String,
+  firstRegistration: Date,
+  lastInspection: Date,
+  warranty: String,
+  serviceHistory: String
+}, { timestamps: true, strict: false });
 
 // Create indexes for common queries
 carListingSchema.index({ make: 1, model: 1 });

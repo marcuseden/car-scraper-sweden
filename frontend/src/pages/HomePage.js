@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import {
   Box,
@@ -14,6 +14,8 @@ import {
   useTheme,
   useMediaQuery,
   Divider,
+  CircularProgress,
+  Alert,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import SpeedIcon from '@mui/icons-material/Speed';
@@ -21,57 +23,52 @@ import VerifiedIcon from '@mui/icons-material/Verified';
 import SupportAgentIcon from '@mui/icons-material/SupportAgent';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import { useLanguage } from '../contexts/LanguageContext';
+import { carListingsApi } from '../services/api';
 
-// Placeholder data for featured cars
-const featuredCars = [
-  {
-    id: 1,
-    title: 'BMW 5 Series',
-    titleSv: 'BMW 5-serie',
-    price: '450 000 kr',
-    year: 2022,
-    mileage: '15 000 km',
-    image: 'https://images.unsplash.com/photo-1523983388277-336a66bf9bcd?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-    location: 'Stockholm',
-  },
-  {
-    id: 2,
-    title: 'Mercedes-Benz E-Class',
-    titleSv: 'Mercedes-Benz E-klass',
-    price: '520 000 kr',
-    year: 2021,
-    mileage: '12 500 km',
-    image: 'https://images.unsplash.com/photo-1553440569-bcc63803a83d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-    location: 'Göteborg',
-  },
-  {
-    id: 3,
-    title: 'Audi A6',
-    titleSv: 'Audi A6',
-    price: '485 000 kr',
-    year: 2022,
-    mileage: '9 800 km',
-    image: 'https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-    location: 'Malmö',
-  },
-  {
-    id: 4,
-    title: 'Tesla Model 3',
-    titleSv: 'Tesla Model 3',
-    price: '399 000 kr',
-    year: 2023,
-    mileage: '5 200 km',
-    image: 'https://images.unsplash.com/photo-1560958089-b8a1929cea89?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-    location: 'Uppsala',
-  },
-];
+// Format price with SEK
+const formatPrice = (price) => {
+  return new Intl.NumberFormat('sv-SE', { 
+    style: 'currency', 
+    currency: 'SEK',
+    maximumFractionDigits: 0 
+  }).format(price);
+};
 
 function HomePage() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const isMedium = useMediaQuery(theme.breakpoints.down('md'));
   const { t, language } = useLanguage();
+  
+  const [featuredCars, setFeaturedCars] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  
+  // Fetch featured car listings
+  useEffect(() => {
+    const fetchFeaturedCars = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        // Get the latest listings with a limit of 8
+        const response = await carListingsApi.getListings({ 
+          limit: 8,
+          sort: 'newest'
+        });
+        setFeaturedCars(response.listings);
+        setLoading(false);
+      } catch (err) {
+        console.error('Error fetching featured car listings:', err);
+        setError('Failed to load featured car listings. Please try again later.');
+        setLoading(false);
+      }
+    };
+    
+    fetchFeaturedCars();
+  }, []);
   
   // Benefits data with translations
   const benefits = [
@@ -171,52 +168,70 @@ function HomePage() {
           </Typography>
         </Box>
 
-        <Grid container spacing={4}>
-          {featuredCars.map((car) => (
-            <Grid item key={car.id} xs={12} sm={6} md={3}>
-              <Card 
-                sx={{ 
-                  height: '100%', 
-                  display: 'flex', 
-                  flexDirection: 'column',
-                  transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
-                  '&:hover': {
-                    transform: 'translateY(-8px)',
-                    boxShadow: '0 12px 20px rgba(0, 0, 0, 0.1)',
-                  },
-                }}
-              >
-                <CardActionArea component={RouterLink} to={`/cars/${car.id}`}>
-                  <CardMedia
-                    component="img"
-                    height="160"
-                    image={car.image}
-                    alt={language === 'en' ? car.title : car.titleSv}
-                  />
-                  <CardContent sx={{ flexGrow: 1 }}>
-                    <Typography gutterBottom variant="h6" component="h3" sx={{ fontWeight: 600 }}>
-                      {language === 'en' ? car.title : car.titleSv}
-                    </Typography>
-                    <Typography variant="h6" color="primary" sx={{ fontWeight: 700, mb: 1 }}>
-                      {car.price}
-                    </Typography>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                      <Typography variant="body2" color="text.secondary">
-                        {t('year')}: {car.year}
+        {loading ? (
+          <Box sx={{ display: 'flex', justifyContent: 'center', my: 5 }}>
+            <CircularProgress />
+          </Box>
+        ) : error ? (
+          <Alert severity="error" sx={{ my: 2 }}>{error}</Alert>
+        ) : featuredCars.length === 0 ? (
+          <Alert severity="info" sx={{ my: 2 }}>{t('noListingsFound')}</Alert>
+        ) : (
+          <Grid container spacing={4}>
+            {featuredCars.map((car) => (
+              <Grid item key={car._id} xs={12} sm={6} md={3}>
+                <Card 
+                  sx={{ 
+                    height: '100%', 
+                    display: 'flex', 
+                    flexDirection: 'column',
+                    transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
+                    '&:hover': {
+                      transform: 'translateY(-8px)',
+                      boxShadow: '0 12px 20px rgba(0, 0, 0, 0.1)',
+                    },
+                  }}
+                >
+                  <CardActionArea component={RouterLink} to={`/cars/${car._id}`}>
+                    <CardMedia
+                      component="img"
+                      height="160"
+                      image={car.images && car.images.length > 0 ? 
+                        car.images.find(img => img.isMain)?.url || car.images[0].url : 
+                        'https://via.placeholder.com/400x200?text=No+Image'}
+                      alt={car.title}
+                    />
+                    <CardContent sx={{ flexGrow: 1 }}>
+                      <Typography gutterBottom variant="h6" component="h3" sx={{ fontWeight: 600 }} noWrap>
+                        {car.title}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        {car.mileage}
+                      <Typography variant="h6" color="primary" sx={{ fontWeight: 700, mb: 1 }}>
+                        {formatPrice(car.price)}
                       </Typography>
-                    </Box>
-                    <Typography variant="body2" color="text.secondary">
-                      {car.location}
-                    </Typography>
-                  </CardContent>
-                </CardActionArea>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                          <CalendarTodayIcon fontSize="small" sx={{ color: 'text.secondary', mr: 0.5 }} />
+                          <Typography variant="body2" color="text.secondary">
+                            {car.year || 'N/A'}
+                          </Typography>
+                        </Box>
+                        <Typography variant="body2" color="text.secondary">
+                          {car.mileage ? `${car.mileage.toLocaleString()} ${car.mileageUnit || 'km'}` : 'N/A'}
+                        </Typography>
+                      </Box>
+                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <LocationOnIcon fontSize="small" sx={{ color: 'text.secondary', mr: 0.5 }} />
+                        <Typography variant="body2" color="text.secondary" noWrap>
+                          {car.location || car.seller?.location || 'N/A'}
+                        </Typography>
+                      </Box>
+                    </CardContent>
+                  </CardActionArea>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        )}
 
         <Box sx={{ textAlign: 'center', mt: 4 }}>
           <Button
@@ -257,61 +272,15 @@ function HomePage() {
                   }}
                 >
                   <Box sx={{ mb: 2 }}>{benefit.icon}</Box>
-                  <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
+                  <Typography variant="h5" component="h3" gutterBottom sx={{ fontWeight: 600 }}>
                     {benefit.title}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant="body1" color="text.secondary">
                     {benefit.description}
                   </Typography>
                 </Box>
               </Grid>
             ))}
-          </Grid>
-        </Container>
-      </Box>
-
-      {/* CTA Section */}
-      <Box
-        sx={{
-          position: 'relative',
-          backgroundColor: 'primary.main',
-          color: '#fff',
-          py: 8,
-          mt: 8,
-        }}
-      >
-        <Container maxWidth="lg">
-          <Grid container spacing={4} alignItems="center">
-            <Grid item xs={12} md={8}>
-              <Typography variant="h3" component="h2" gutterBottom sx={{ fontWeight: 700 }}>
-                {t('readyToFind')}
-              </Typography>
-              <Typography variant="h6" paragraph>
-                {t('readyToFindSubtitle')}
-              </Typography>
-            </Grid>
-            <Grid item xs={12} md={4} sx={{ textAlign: { xs: 'left', md: 'right' } }}>
-              <Button
-                variant="contained"
-                size="large"
-                component={RouterLink}
-                to="/scraper"
-                sx={{
-                  py: 1.5,
-                  px: 4,
-                  fontSize: '1.1rem',
-                  borderRadius: '30px',
-                  bgcolor: '#fff',
-                  color: 'primary.main',
-                  '&:hover': {
-                    bgcolor: 'grey.100',
-                  },
-                }}
-                startIcon={<PlayArrowIcon />}
-              >
-                {t('startSearching')}
-              </Button>
-            </Grid>
           </Grid>
         </Container>
       </Box>
@@ -329,25 +298,26 @@ function HomePage() {
 
         <Grid container spacing={4}>
           <Grid item xs={12} md={4}>
-            <Box sx={{ textAlign: 'center', p: 2 }}>
+            <Box sx={{ textAlign: 'center', p: 3 }}>
               <Box
                 sx={{
                   width: 80,
                   height: 80,
                   borderRadius: '50%',
-                  bgcolor: 'primary.light',
+                  bgcolor: 'primary.main',
+                  color: 'white',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   mx: 'auto',
                   mb: 2,
+                  fontSize: '2rem',
+                  fontWeight: 'bold',
                 }}
               >
-                <Typography variant="h4" sx={{ color: 'primary.contrastText', fontWeight: 700 }}>
-                  1
-                </Typography>
+                1
               </Box>
-              <Typography variant="h5" gutterBottom sx={{ fontWeight: 600 }}>
+              <Typography variant="h5" component="h3" gutterBottom sx={{ fontWeight: 600 }}>
                 {t('step1Title')}
               </Typography>
               <Typography variant="body1" color="text.secondary">
@@ -356,25 +326,26 @@ function HomePage() {
             </Box>
           </Grid>
           <Grid item xs={12} md={4}>
-            <Box sx={{ textAlign: 'center', p: 2 }}>
+            <Box sx={{ textAlign: 'center', p: 3 }}>
               <Box
                 sx={{
                   width: 80,
                   height: 80,
                   borderRadius: '50%',
-                  bgcolor: 'primary.light',
+                  bgcolor: 'primary.main',
+                  color: 'white',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   mx: 'auto',
                   mb: 2,
+                  fontSize: '2rem',
+                  fontWeight: 'bold',
                 }}
               >
-                <Typography variant="h4" sx={{ color: 'primary.contrastText', fontWeight: 700 }}>
-                  2
-                </Typography>
+                2
               </Box>
-              <Typography variant="h5" gutterBottom sx={{ fontWeight: 600 }}>
+              <Typography variant="h5" component="h3" gutterBottom sx={{ fontWeight: 600 }}>
                 {t('step2Title')}
               </Typography>
               <Typography variant="body1" color="text.secondary">
@@ -383,25 +354,26 @@ function HomePage() {
             </Box>
           </Grid>
           <Grid item xs={12} md={4}>
-            <Box sx={{ textAlign: 'center', p: 2 }}>
+            <Box sx={{ textAlign: 'center', p: 3 }}>
               <Box
                 sx={{
                   width: 80,
                   height: 80,
                   borderRadius: '50%',
-                  bgcolor: 'primary.light',
+                  bgcolor: 'primary.main',
+                  color: 'white',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   mx: 'auto',
                   mb: 2,
+                  fontSize: '2rem',
+                  fontWeight: 'bold',
                 }}
               >
-                <Typography variant="h4" sx={{ color: 'primary.contrastText', fontWeight: 700 }}>
-                  3
-                </Typography>
+                3
               </Box>
-              <Typography variant="h5" gutterBottom sx={{ fontWeight: 600 }}>
+              <Typography variant="h5" component="h3" gutterBottom sx={{ fontWeight: 600 }}>
                 {t('step3Title')}
               </Typography>
               <Typography variant="body1" color="text.secondary">
@@ -411,6 +383,63 @@ function HomePage() {
           </Grid>
         </Grid>
       </Container>
+
+      {/* Call to Action Section */}
+      <Box
+        sx={{
+          bgcolor: 'primary.main',
+          color: 'white',
+          py: 8,
+          position: 'relative',
+          overflow: 'hidden',
+        }}
+      >
+        <Container maxWidth="lg">
+          <Grid container spacing={4} alignItems="center">
+            <Grid item xs={12} md={7}>
+              <Typography variant="h3" component="h2" gutterBottom sx={{ fontWeight: 700 }}>
+                {t('readyToFind')}
+              </Typography>
+              <Typography variant="h6" paragraph sx={{ mb: 4, opacity: 0.9 }}>
+                {t('readyToFindSubtitle')}
+              </Typography>
+              <Button
+                variant="contained"
+                size="large"
+                component={RouterLink}
+                to="/cars"
+                sx={{
+                  bgcolor: 'white',
+                  color: 'primary.main',
+                  '&:hover': {
+                    bgcolor: 'grey.100',
+                  },
+                  py: 1.5,
+                  px: 4,
+                  fontSize: '1.1rem',
+                  borderRadius: '30px',
+                  boxShadow: '0 8px 16px rgba(0, 0, 0, 0.1)',
+                }}
+              >
+                {t('startSearching')}
+              </Button>
+            </Grid>
+            <Grid item xs={12} md={5} sx={{ display: { xs: 'none', md: 'block' } }}>
+              <Box
+                component="img"
+                src="https://source.unsplash.com/random/600x400/?sports-car"
+                alt="Luxury car"
+                sx={{
+                  width: '100%',
+                  borderRadius: 2,
+                  boxShadow: '0 16px 32px rgba(0, 0, 0, 0.2)',
+                  transform: 'rotate(2deg)',
+                }}
+              />
+            </Grid>
+          </Grid>
+        </Container>
+      </Box>
     </Box>
   );
 }

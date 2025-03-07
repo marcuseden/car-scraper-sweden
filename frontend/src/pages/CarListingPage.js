@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useLocation, useNavigate } from 'react-router-dom';
 import {
   Box,
   Button,
@@ -25,6 +25,8 @@ import {
   Typography,
   useTheme,
   useMediaQuery,
+  CircularProgress,
+  Alert,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import FilterListIcon from '@mui/icons-material/FilterList';
@@ -34,129 +36,138 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import SpeedIcon from '@mui/icons-material/Speed';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
-
-// Placeholder data for car listings
-const carListings = [
-  {
-    id: 1,
-    title: 'BMW 5 Series',
-    price: 450000,
-    year: 2022,
-    mileage: '15 000 km',
-    image: 'https://images.unsplash.com/photo-1523983388277-336a66bf9bcd?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-    location: 'Stockholm',
-    fuel: 'Bensin',
-    transmission: 'Automat',
-    favorite: false,
-  },
-  {
-    id: 2,
-    title: 'Mercedes-Benz E-Class',
-    price: 520000,
-    year: 2021,
-    mileage: '12 500 km',
-    image: 'https://images.unsplash.com/photo-1553440569-bcc63803a83d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-    location: 'Göteborg',
-    fuel: 'Diesel',
-    transmission: 'Automat',
-    favorite: true,
-  },
-  {
-    id: 3,
-    title: 'Audi A6',
-    price: 485000,
-    year: 2022,
-    mileage: '9 800 km',
-    image: 'https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-    location: 'Malmö',
-    fuel: 'Bensin',
-    transmission: 'Automat',
-    favorite: false,
-  },
-  {
-    id: 4,
-    title: 'Tesla Model 3',
-    price: 399000,
-    year: 2023,
-    mileage: '5 200 km',
-    image: 'https://images.unsplash.com/photo-1560958089-b8a1929cea89?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-    location: 'Uppsala',
-    fuel: 'El',
-    transmission: 'Automat',
-    favorite: false,
-  },
-  {
-    id: 5,
-    title: 'Lexus ES',
-    price: 420000,
-    year: 2022,
-    mileage: '11 200 km',
-    image: 'https://images.unsplash.com/photo-1583267746897-2cf415887172?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-    location: 'Västerås',
-    fuel: 'Hybrid',
-    transmission: 'Automat',
-    favorite: false,
-  },
-  {
-    id: 6,
-    title: 'Porsche 911',
-    price: 1150000,
-    year: 2021,
-    mileage: '8 500 km',
-    image: 'https://images.unsplash.com/photo-1584060622420-0673aad46076?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-    location: 'Stockholm',
-    fuel: 'Bensin',
-    transmission: 'Manuell',
-    favorite: true,
-  },
-  {
-    id: 7,
-    title: 'Range Rover Sport',
-    price: 780000,
-    year: 2022,
-    mileage: '14 300 km',
-    image: 'https://images.unsplash.com/photo-1539788816080-8bdd722d8c22?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-    location: 'Linköping',
-    fuel: 'Diesel',
-    transmission: 'Automat',
-    favorite: false,
-  },
-  {
-    id: 8,
-    title: 'Jaguar F-Pace',
-    price: 560000,
-    year: 2023,
-    mileage: '7 800 km',
-    image: 'https://images.unsplash.com/photo-1580274455191-1c62238fa333?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-    location: 'Helsingborg',
-    fuel: 'Bensin',
-    transmission: 'Automat',
-    favorite: false,
-  },
-];
+import { carListingsApi } from '../services/api';
+import { useLanguage } from '../contexts/LanguageContext';
 
 // Filter options
 const makes = ['Alla märken', 'Audi', 'BMW', 'Jaguar', 'Lexus', 'Mercedes-Benz', 'Porsche', 'Range Rover', 'Tesla'];
-const years = ['Alla år', '2023', '2022', '2021', '2020', '2019', '2018'];
+const years = ['Alla år', '2024', '2023', '2022', '2021', '2020', '2019', '2018'];
 const fuelTypes = ['Alla bränsletyper', 'Bensin', 'Diesel', 'El', 'Hybrid'];
 const transmissions = ['Alla växellådor', 'Automat', 'Manuell'];
+
+// Format price with SEK
+const formatPrice = (price) => {
+  return new Intl.NumberFormat('sv-SE', { 
+    style: 'currency', 
+    currency: 'SEK',
+    maximumFractionDigits: 0 
+  }).format(price);
+};
 
 function CarListingPage() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const isMedium = useMediaQuery(theme.breakpoints.down('md'));
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { t } = useLanguage();
   
   const [searchTerm, setSearchTerm] = useState('');
-  const [priceRange, setPriceRange] = useState([0, 150000]);
+  const [priceRange, setPriceRange] = useState([0, 2000000]);
   const [selectedMake, setSelectedMake] = useState('Alla märken');
   const [selectedYear, setSelectedYear] = useState('Alla år');
   const [selectedFuel, setSelectedFuel] = useState('Alla bränsletyper');
   const [selectedTransmission, setSelectedTransmission] = useState('Alla växellådor');
   const [sortBy, setSortBy] = useState('newest');
   const [showFilters, setShowFilters] = useState(!isMobile);
-  const [cars, setCars] = useState(carListings);
+  const [cars, setCars] = useState([]);
+  const [filteredCars, setFilteredCars] = useState([]);
   const [page, setPage] = useState(1);
-  const carsPerPage = 6;
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const carsPerPage = 12;
+
+  // Parse query params on initial load
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.has('make')) setSelectedMake(params.get('make'));
+    if (params.has('search')) setSearchTerm(params.get('search'));
+    if (params.has('minPrice') && params.has('maxPrice')) {
+      setPriceRange([parseInt(params.get('minPrice')), parseInt(params.get('maxPrice'))]);
+    }
+    if (params.has('year')) setSelectedYear(params.get('year'));
+    if (params.has('fuel')) setSelectedFuel(params.get('fuel'));
+    if (params.has('transmission')) setSelectedTransmission(params.get('transmission'));
+    if (params.has('sort')) setSortBy(params.get('sort'));
+    if (params.has('page')) setPage(parseInt(params.get('page')));
+  }, [location.search]);
+
+  // Fetch car listings
+  useEffect(() => {
+    const fetchCars = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        // Build filter params
+        const params = {};
+        if (selectedMake !== 'Alla märken') params.make = selectedMake;
+        if (priceRange[0] > 0) params.minPrice = priceRange[0];
+        if (priceRange[1] < 2000000) params.maxPrice = priceRange[1];
+        if (searchTerm) params.search = searchTerm;
+        params.page = page;
+        params.limit = carsPerPage;
+
+        const response = await carListingsApi.getListings(params);
+        setCars(response.listings);
+        setTotalPages(response.totalPages);
+        setLoading(false);
+      } catch (err) {
+        console.error('Error fetching car listings:', err);
+        setError('Failed to load car listings. Please try again later.');
+        setLoading(false);
+      }
+    };
+
+    fetchCars();
+  }, [selectedMake, priceRange, searchTerm, page]);
+
+  // Apply client-side filters
+  useEffect(() => {
+    let filtered = [...cars];
+    
+    // Apply year filter
+    if (selectedYear !== 'Alla år') {
+      filtered = filtered.filter(car => 
+        car.year && car.year.toString() === selectedYear
+      );
+    }
+    
+    // Apply fuel type filter
+    if (selectedFuel !== 'Alla bränsletyper') {
+      filtered = filtered.filter(car => 
+        (car.fuel && car.fuel === selectedFuel) || 
+        (car.fuelType && car.fuelType === selectedFuel)
+      );
+    }
+    
+    // Apply transmission filter
+    if (selectedTransmission !== 'Alla växellådor') {
+      filtered = filtered.filter(car => 
+        car.transmission === selectedTransmission
+      );
+    }
+    
+    // Apply sorting
+    switch (sortBy) {
+      case 'price-low':
+        filtered.sort((a, b) => a.price - b.price);
+        break;
+      case 'price-high':
+        filtered.sort((a, b) => b.price - a.price);
+        break;
+      case 'newest':
+        filtered.sort((a, b) => (b.year || 0) - (a.year || 0));
+        break;
+      case 'oldest':
+        filtered.sort((a, b) => (a.year || 0) - (b.year || 0));
+        break;
+      default:
+        filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    }
+    
+    setFilteredCars(filtered);
+  }, [cars, selectedYear, selectedFuel, selectedTransmission, sortBy]);
 
   // Handle price range change
   const handlePriceChange = (event, newValue) => {
@@ -168,9 +179,17 @@ function CarListingPage() {
     setSearchTerm(event.target.value);
   };
 
+  // Handle search submit
+  const handleSearchSubmit = (event) => {
+    event.preventDefault();
+    setPage(1);
+    updateQueryParams();
+  };
+
   // Handle sort change
   const handleSortChange = (event) => {
     setSortBy(event.target.value);
+    updateQueryParams({ sort: event.target.value });
   };
 
   // Toggle filters visibility on mobile
@@ -181,120 +200,235 @@ function CarListingPage() {
   // Handle favorite toggle
   const handleFavoriteToggle = (id) => {
     setCars(cars.map(car => 
-      car.id === id ? { ...car, favorite: !car.favorite } : car
+      car._id === id ? { ...car, favorite: !car.favorite } : car
     ));
   };
 
   // Handle pagination change
   const handlePageChange = (event, value) => {
     setPage(value);
+    updateQueryParams({ page: value });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Filter and sort cars
-  useEffect(() => {
-    let filteredCars = [...carListings];
+  // Update query params in URL
+  const updateQueryParams = (newParams = {}) => {
+    const params = new URLSearchParams(location.search);
     
-    // Apply search filter
-    if (searchTerm) {
-      filteredCars = filteredCars.filter(car => 
-        car.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        car.location.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
+    // Update with current filter values
+    if (selectedMake !== 'Alla märken') params.set('make', selectedMake);
+    else params.delete('make');
     
-    // Apply price range filter
-    filteredCars = filteredCars.filter(car => 
-      car.price >= priceRange[0] && car.price <= priceRange[1]
-    );
+    if (searchTerm) params.set('search', searchTerm);
+    else params.delete('search');
     
-    // Apply make filter
-    if (selectedMake !== 'Alla märken') {
-      filteredCars = filteredCars.filter(car => 
-        car.title.includes(selectedMake)
-      );
-    }
+    if (priceRange[0] > 0) params.set('minPrice', priceRange[0]);
+    else params.delete('minPrice');
     
-    // Apply year filter
-    if (selectedYear !== 'Alla år') {
-      filteredCars = filteredCars.filter(car => 
-        car.year.toString() === selectedYear
-      );
-    }
+    if (priceRange[1] < 2000000) params.set('maxPrice', priceRange[1]);
+    else params.delete('maxPrice');
     
-    // Apply fuel type filter
-    if (selectedFuel !== 'Alla bränsletyper') {
-      filteredCars = filteredCars.filter(car => 
-        car.fuel === selectedFuel
-      );
-    }
+    if (selectedYear !== 'Alla år') params.set('year', selectedYear);
+    else params.delete('year');
     
-    // Apply transmission filter
-    if (selectedTransmission !== 'Alla växellådor') {
-      filteredCars = filteredCars.filter(car => 
-        car.transmission === selectedTransmission
-      );
-    }
+    if (selectedFuel !== 'Alla bränsletyper') params.set('fuel', selectedFuel);
+    else params.delete('fuel');
     
-    // Apply sorting
-    switch (sortBy) {
-      case 'price-low':
-        filteredCars.sort((a, b) => a.price - b.price);
-        break;
-      case 'price-high':
-        filteredCars.sort((a, b) => b.price - a.price);
-        break;
-      case 'newest':
-        filteredCars.sort((a, b) => b.year - a.year);
-        break;
-      case 'oldest':
-        filteredCars.sort((a, b) => a.year - b.year);
-        break;
-      default:
-        break;
-    }
+    if (selectedTransmission !== 'Alla växellådor') params.set('transmission', selectedTransmission);
+    else params.delete('transmission');
     
-    setCars(filteredCars);
-    setPage(1); // Reset to first page when filters change
-  }, [searchTerm, priceRange, selectedMake, selectedYear, selectedFuel, selectedTransmission, sortBy]);
+    if (sortBy !== 'newest') params.set('sort', sortBy);
+    else params.delete('sort');
+    
+    // Override with any new params
+    Object.entries(newParams).forEach(([key, value]) => {
+      if (value) params.set(key, value);
+      else params.delete(key);
+    });
+    
+    navigate({ search: params.toString() });
+  };
 
-  // Calculate pagination
-  const indexOfLastCar = page * carsPerPage;
-  const indexOfFirstCar = indexOfLastCar - carsPerPage;
-  const currentCars = cars.slice(indexOfFirstCar, indexOfLastCar);
-  const totalPages = Math.ceil(cars.length / carsPerPage);
+  // Apply filters
+  const applyFilters = () => {
+    setPage(1);
+    updateQueryParams({ page: 1 });
+  };
+
+  // Reset filters
+  const resetFilters = () => {
+    setSearchTerm('');
+    setPriceRange([0, 2000000]);
+    setSelectedMake('Alla märken');
+    setSelectedYear('Alla år');
+    setSelectedFuel('Alla bränsletyper');
+    setSelectedTransmission('Alla växellådor');
+    setSortBy('newest');
+    setPage(1);
+    navigate({ search: '' });
+  };
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 700 }}>
-        Car Listings
+    <Container maxWidth="xl" sx={{ py: 4 }}>
+      <Typography variant="h4" component="h1" gutterBottom>
+        {t('carListings')}
       </Typography>
       
-      {/* Search and Filter Bar */}
-      <Paper sx={{ p: 3, mb: 4 }}>
-        <Grid container spacing={2} alignItems="center">
-          <Grid item xs={12} md={6}>
-            <TextField
-              fullWidth
-              placeholder="Search by make, model, or location"
-              value={searchTerm}
-              onChange={handleSearchChange}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon />
-                  </InputAdornment>
-                ),
-              }}
-            />
-          </Grid>
-          <Grid item xs={6} md={3}>
-            <FormControl fullWidth>
-              <InputLabel id="sort-label">Sort By</InputLabel>
+      <Grid container spacing={3}>
+        {/* Filters */}
+        <Grid item xs={12} md={3}>
+          <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Typography variant="h6" component="h2">
+              {t('filters')}
+            </Typography>
+            <Button 
+              variant="outlined" 
+              startIcon={<FilterListIcon />}
+              onClick={toggleFilters}
+              sx={{ display: { md: 'none' } }}
+            >
+              {showFilters ? t('hideFilters') : t('showFilters')}
+            </Button>
+          </Box>
+          
+          {(showFilters || !isMobile) && (
+            <Paper elevation={3} sx={{ p: 2 }}>
+              <form onSubmit={handleSearchSubmit}>
+                <TextField
+                  fullWidth
+                  label={t('search')}
+                  variant="outlined"
+                  value={searchTerm}
+                  onChange={handleSearchChange}
+                  sx={{ mb: 3 }}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton type="submit" edge="end">
+                          <SearchIcon />
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </form>
+              
+              <FormControl fullWidth sx={{ mb: 3 }}>
+                <InputLabel id="make-label">{t('make')}</InputLabel>
+                <Select
+                  labelId="make-label"
+                  value={selectedMake}
+                  label={t('make')}
+                  onChange={(e) => setSelectedMake(e.target.value)}
+                >
+                  {makes.map((make) => (
+                    <MenuItem key={make} value={make}>
+                      {make}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              
+              <Box sx={{ mb: 3 }}>
+                <Typography gutterBottom>{t('price')}</Typography>
+                <Slider
+                  value={priceRange}
+                  onChange={handlePriceChange}
+                  valueLabelDisplay="auto"
+                  min={0}
+                  max={2000000}
+                  step={50000}
+                  valueLabelFormat={(value) => formatPrice(value)}
+                />
+                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <Typography variant="body2">{formatPrice(priceRange[0])}</Typography>
+                  <Typography variant="body2">{formatPrice(priceRange[1])}</Typography>
+                </Box>
+              </Box>
+              
+              <FormControl fullWidth sx={{ mb: 3 }}>
+                <InputLabel id="year-label">{t('year')}</InputLabel>
+                <Select
+                  labelId="year-label"
+                  value={selectedYear}
+                  label={t('year')}
+                  onChange={(e) => setSelectedYear(e.target.value)}
+                >
+                  {years.map((year) => (
+                    <MenuItem key={year} value={year}>
+                      {year}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              
+              <FormControl fullWidth sx={{ mb: 3 }}>
+                <InputLabel id="fuel-label">{t('fuelType')}</InputLabel>
+                <Select
+                  labelId="fuel-label"
+                  value={selectedFuel}
+                  label={t('fuelType')}
+                  onChange={(e) => setSelectedFuel(e.target.value)}
+                >
+                  {fuelTypes.map((fuel) => (
+                    <MenuItem key={fuel} value={fuel}>
+                      {fuel}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              
+              <FormControl fullWidth sx={{ mb: 3 }}>
+                <InputLabel id="transmission-label">{t('transmission')}</InputLabel>
+                <Select
+                  labelId="transmission-label"
+                  value={selectedTransmission}
+                  label={t('transmission')}
+                  onChange={(e) => setSelectedTransmission(e.target.value)}
+                >
+                  {transmissions.map((transmission) => (
+                    <MenuItem key={transmission} value={transmission}>
+                      {transmission}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              
+              <Stack direction="row" spacing={2}>
+                <Button 
+                  variant="contained" 
+                  color="primary" 
+                  fullWidth
+                  onClick={applyFilters}
+                >
+                  {t('applyFilters')}
+                </Button>
+                <Button 
+                  variant="outlined" 
+                  color="secondary" 
+                  fullWidth
+                  onClick={resetFilters}
+                >
+                  {t('resetFilters')}
+                </Button>
+              </Stack>
+            </Paper>
+          )}
+        </Grid>
+        
+        {/* Car Listings */}
+        <Grid item xs={12} md={9}>
+          <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap' }}>
+            <Typography variant="h6" component="h2">
+              {loading ? t('loading') : `${filteredCars.length} ${t('carsFound')}`}
+            </Typography>
+            
+            <FormControl sx={{ minWidth: 200 }}>
+              <InputLabel id="sort-label">{t('sortBy')}</InputLabel>
               <Select
                 labelId="sort-label"
                 value={sortBy}
-                label="Sort By"
+                label={t('sortBy')}
                 onChange={handleSortChange}
                 startAdornment={
                   <InputAdornment position="start">
@@ -302,303 +436,109 @@ function CarListingPage() {
                   </InputAdornment>
                 }
               >
-                <MenuItem value="newest">Newest First</MenuItem>
-                <MenuItem value="oldest">Oldest First</MenuItem>
-                <MenuItem value="price-low">Price: Low to High</MenuItem>
-                <MenuItem value="price-high">Price: High to Low</MenuItem>
+                <MenuItem value="newest">{t('newest')}</MenuItem>
+                <MenuItem value="oldest">{t('oldest')}</MenuItem>
+                <MenuItem value="price-low">{t('priceLowToHigh')}</MenuItem>
+                <MenuItem value="price-high">{t('priceHighToLow')}</MenuItem>
               </Select>
             </FormControl>
-          </Grid>
-          <Grid item xs={6} md={3}>
-            <Button
-              fullWidth
-              variant="outlined"
-              startIcon={<FilterListIcon />}
-              onClick={toggleFilters}
-              sx={{ height: '56px' }}
-            >
-              {showFilters ? 'Hide Filters' : 'Show Filters'}
-            </Button>
-          </Grid>
-        </Grid>
-        
-        {/* Filters Section */}
-        {showFilters && (
-          <Box sx={{ mt: 3 }}>
-            <Divider sx={{ mb: 3 }} />
-            <Grid container spacing={3}>
-              <Grid item xs={12} sm={6} md={3}>
-                <FormControl fullWidth>
-                  <InputLabel id="make-label">Make</InputLabel>
-                  <Select
-                    labelId="make-label"
-                    value={selectedMake}
-                    label="Make"
-                    onChange={(e) => setSelectedMake(e.target.value)}
-                  >
-                    {makes.map((make) => (
-                      <MenuItem key={make} value={make}>
-                        {make}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item xs={12} sm={6} md={3}>
-                <FormControl fullWidth>
-                  <InputLabel id="year-label">Year</InputLabel>
-                  <Select
-                    labelId="year-label"
-                    value={selectedYear}
-                    label="Year"
-                    onChange={(e) => setSelectedYear(e.target.value)}
-                  >
-                    {years.map((year) => (
-                      <MenuItem key={year} value={year}>
-                        {year}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item xs={12} sm={6} md={3}>
-                <FormControl fullWidth>
-                  <InputLabel id="fuel-label">Fuel Type</InputLabel>
-                  <Select
-                    labelId="fuel-label"
-                    value={selectedFuel}
-                    label="Fuel Type"
-                    onChange={(e) => setSelectedFuel(e.target.value)}
-                  >
-                    {fuelTypes.map((fuel) => (
-                      <MenuItem key={fuel} value={fuel}>
-                        {fuel}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item xs={12} sm={6} md={3}>
-                <FormControl fullWidth>
-                  <InputLabel id="transmission-label">Transmission</InputLabel>
-                  <Select
-                    labelId="transmission-label"
-                    value={selectedTransmission}
-                    label="Transmission"
-                    onChange={(e) => setSelectedTransmission(e.target.value)}
-                  >
-                    {transmissions.map((transmission) => (
-                      <MenuItem key={transmission} value={transmission}>
-                        {transmission}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item xs={12}>
-                <Typography id="price-range-slider" gutterBottom>
-                  Prisintervall: {priceRange[0].toLocaleString()} kr - {priceRange[1].toLocaleString()} kr
-                </Typography>
-                <Slider
-                  value={priceRange}
-                  onChange={handlePriceChange}
-                  valueLabelDisplay="auto"
-                  min={0}
-                  max={1500000}
-                  step={50000}
-                  valueLabelFormat={(value) => `${value.toLocaleString()} kr`}
-                  aria-labelledby="price-range-slider"
-                />
-              </Grid>
-            </Grid>
           </Box>
-        )}
-      </Paper>
-      
-      {/* Results Count and Active Filters */}
-      <Box sx={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', mb: 3 }}>
-        <Typography variant="subtitle1" sx={{ mb: isMobile ? 2 : 0 }}>
-          Showing <strong>{cars.length}</strong> cars
-        </Typography>
-        
-        <Stack direction="row" spacing={1} flexWrap="wrap">
-          {selectedMake !== 'Alla märken' && (
-            <Chip 
-              label={`Make: ${selectedMake}`} 
-              onDelete={() => setSelectedMake('Alla märken')} 
-              size="small" 
-              sx={{ m: 0.5 }}
-            />
-          )}
-          {selectedYear !== 'Alla år' && (
-            <Chip 
-              label={`Year: ${selectedYear}`} 
-              onDelete={() => setSelectedYear('Alla år')} 
-              size="small" 
-              sx={{ m: 0.5 }}
-            />
-          )}
-          {selectedFuel !== 'Alla bränsletyper' && (
-            <Chip 
-              label={`Fuel: ${selectedFuel}`} 
-              onDelete={() => setSelectedFuel('Alla bränsletyper')} 
-              size="small" 
-              sx={{ m: 0.5 }}
-            />
-          )}
-          {selectedTransmission !== 'Alla växellådor' && (
-            <Chip 
-              label={`Transmission: ${selectedTransmission}`} 
-              onDelete={() => setSelectedTransmission('Alla växellådor')} 
-              size="small" 
-              sx={{ m: 0.5 }}
-            />
-          )}
-          {(selectedMake !== 'Alla märken' || selectedYear !== 'Alla år' || 
-            selectedFuel !== 'Alla bränsletyper' || selectedTransmission !== 'Alla växellådor' || 
-            priceRange[0] > 0 || priceRange[1] < 150000 || searchTerm) && (
-            <Chip 
-              label="Clear All" 
-              onClick={() => {
-                setSelectedMake('Alla märken');
-                setSelectedYear('Alla år');
-                setSelectedFuel('Alla bränsletyper');
-                setSelectedTransmission('Alla växellådor');
-                setPriceRange([0, 150000]);
-                setSearchTerm('');
-              }} 
-              color="primary" 
-              size="small" 
-              sx={{ m: 0.5 }}
-            />
-          )}
-        </Stack>
-      </Box>
-      
-      {/* Car Listings */}
-      {cars.length > 0 ? (
-        <>
-          <Grid container spacing={3}>
-            {currentCars.map((car) => (
-              <Grid item key={car.id} xs={12} sm={6} md={4}>
-                <Card 
-                  sx={{ 
-                    height: '100%', 
-                    display: 'flex', 
-                    flexDirection: 'column',
-                    position: 'relative',
-                    transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
-                    '&:hover': {
-                      transform: 'translateY(-8px)',
-                      boxShadow: '0 12px 20px rgba(0, 0, 0, 0.1)',
-                    },
-                  }}
-                >
-                  <IconButton
-                    aria-label="add to favorites"
-                    onClick={() => handleFavoriteToggle(car.id)}
-                    sx={{
-                      position: 'absolute',
-                      top: 8,
-                      right: 8,
-                      bgcolor: 'rgba(255, 255, 255, 0.8)',
+          
+          {loading ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', my: 5 }}>
+              <CircularProgress />
+            </Box>
+          ) : error ? (
+            <Alert severity="error" sx={{ my: 2 }}>{error}</Alert>
+          ) : filteredCars.length === 0 ? (
+            <Alert severity="info" sx={{ my: 2 }}>{t('noListingsFound')}</Alert>
+          ) : (
+            <Grid container spacing={3}>
+              {filteredCars.map((car) => (
+                <Grid item xs={12} sm={6} md={4} key={car._id}>
+                  <Card 
+                    elevation={3} 
+                    sx={{ 
+                      height: '100%', 
+                      display: 'flex', 
+                      flexDirection: 'column',
+                      transition: 'transform 0.2s',
                       '&:hover': {
-                        bgcolor: 'rgba(255, 255, 255, 0.9)',
-                      },
-                      zIndex: 1,
+                        transform: 'translateY(-5px)',
+                      }
                     }}
                   >
-                    {car.favorite ? <FavoriteIcon color="error" /> : <FavoriteBorderIcon />}
-                  </IconButton>
-                  <CardActionArea component={RouterLink} to={`/cars/${car.id}`}>
-                    <CardMedia
-                      component="img"
-                      height="200"
-                      image={car.image}
-                      alt={car.title}
-                    />
-                    <CardContent sx={{ flexGrow: 1 }}>
-                      <Typography gutterBottom variant="h6" component="h2" sx={{ fontWeight: 600 }}>
-                        {car.title}
+                    <CardActionArea component={RouterLink} to={`/cars/${car._id}`}>
+                      <CardMedia
+                        component="img"
+                        height="200"
+                        image={car.images && car.images.length > 0 ? 
+                          car.images.find(img => img.isMain)?.url || car.images[0].url : 
+                          'https://via.placeholder.com/400x200?text=No+Image'}
+                        alt={car.title}
+                      />
+                      <CardContent sx={{ flexGrow: 1 }}>
+                        <Typography gutterBottom variant="h6" component="h3" noWrap>
+                          {car.title}
+                        </Typography>
+                        
+                        <Typography variant="h5" color="primary" gutterBottom>
+                          {formatPrice(car.price)}
+                        </Typography>
+                        
+                        <Stack direction="row" spacing={1} sx={{ mb: 1 }}>
+                          <Chip 
+                            icon={<CalendarTodayIcon />} 
+                            label={car.year || 'N/A'} 
+                            size="small" 
+                            variant="outlined"
+                          />
+                          <Chip 
+                            icon={<SpeedIcon />} 
+                            label={car.mileage ? `${car.mileage} ${car.mileageUnit || 'km'}` : 'N/A'} 
+                            size="small" 
+                            variant="outlined"
+                          />
+                        </Stack>
+                        
+                        <Typography variant="body2" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
+                          <LocationOnIcon fontSize="small" sx={{ mr: 0.5 }} />
+                          {car.location || car.seller?.location || 'N/A'}
+                        </Typography>
+                      </CardContent>
+                    </CardActionArea>
+                    <Box sx={{ p: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Typography variant="body2" color="text.secondary">
+                        {car.source || 'Unknown source'}
                       </Typography>
-                      <Typography variant="h6" color="primary" sx={{ fontWeight: 700, mb: 2 }}>
-                        {car.price.toLocaleString()} kr
-                      </Typography>
-                      
-                      <Grid container spacing={1}>
-                        <Grid item xs={6}>
-                          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            <CalendarTodayIcon fontSize="small" sx={{ color: 'text.secondary', mr: 1 }} />
-                            <Typography variant="body2" color="text.secondary">
-                              {car.year}
-                            </Typography>
-                          </Box>
-                        </Grid>
-                        <Grid item xs={6}>
-                          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            <SpeedIcon fontSize="small" sx={{ color: 'text.secondary', mr: 1 }} />
-                            <Typography variant="body2" color="text.secondary">
-                              {car.mileage}
-                            </Typography>
-                          </Box>
-                        </Grid>
-                        <Grid item xs={12}>
-                          <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
-                            <LocationOnIcon fontSize="small" sx={{ color: 'text.secondary', mr: 1 }} />
-                            <Typography variant="body2" color="text.secondary">
-                              {car.location}
-                            </Typography>
-                          </Box>
-                        </Grid>
-                      </Grid>
-                      
-                      <Box sx={{ display: 'flex', mt: 2, gap: 1 }}>
-                        <Chip size="small" label={car.fuel} />
-                        <Chip size="small" label={car.transmission} />
-                      </Box>
-                    </CardContent>
-                  </CardActionArea>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
+                      <IconButton 
+                        color={car.favorite ? 'primary' : 'default'} 
+                        onClick={() => handleFavoriteToggle(car._id)}
+                        aria-label={car.favorite ? 'Remove from favorites' : 'Add to favorites'}
+                      >
+                        {car.favorite ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+                      </IconButton>
+                    </Box>
+                  </Card>
+                </Grid>
+              ))}
+            </Grid>
+          )}
           
           {/* Pagination */}
-          {totalPages > 1 && (
+          {!loading && totalPages > 1 && (
             <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
               <Pagination 
                 count={totalPages} 
                 page={page} 
                 onChange={handlePageChange} 
                 color="primary" 
-                size={isMobile ? "small" : "medium"}
+                size={isMobile ? 'small' : 'medium'}
               />
             </Box>
           )}
-        </>
-      ) : (
-        <Paper sx={{ p: 4, textAlign: 'center' }}>
-          <Typography variant="h6" gutterBottom>
-            No cars found matching your criteria
-          </Typography>
-          <Typography variant="body1" color="text.secondary" paragraph>
-            Try adjusting your filters or search term to see more results.
-          </Typography>
-          <Button 
-            variant="contained" 
-            onClick={() => {
-              setSelectedMake('Alla märken');
-              setSelectedYear('Alla år');
-              setSelectedFuel('Alla bränsletyper');
-              setSelectedTransmission('Alla växellådor');
-              setPriceRange([0, 150000]);
-              setSearchTerm('');
-            }}
-          >
-            Clear All Filters
-          </Button>
-        </Paper>
-      )}
+        </Grid>
+      </Grid>
     </Container>
   );
 }

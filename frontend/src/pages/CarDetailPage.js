@@ -21,6 +21,11 @@ import {
   useMediaQuery,
   Snackbar,
   Alert,
+  Stack,
+  CircularProgress,
+  Dialog,
+  DialogContent,
+  DialogTitle,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import FavoriteIcon from '@mui/icons-material/Favorite';
@@ -37,83 +42,17 @@ import PhoneIcon from '@mui/icons-material/Phone';
 import EmailIcon from '@mui/icons-material/Email';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import CloseIcon from '@mui/icons-material/Close';
+import { carListingsApi } from '../services/api';
 import { useLanguage } from '../contexts/LanguageContext';
 
-// Placeholder car data
-const carData = {
-  id: 1,
-  title: 'BMW 5 Series 530i M Sport',
-  price: 450000,
-  year: 2022,
-  mileage: '15 000 km',
-  location: 'Stockholm',
-  fuel: 'Bensin',
-  transmission: 'Automat',
-  color: 'Alpinvit',
-  engine: '2.0L Turbo I4',
-  drivetrain: 'Bakhjulsdrift',
-  vin: 'WBA5R7C51LFH38113',
-  favorite: false,
-  description: 'Denna BMW 5 Series 530i M Sport är i utmärkt skick med låg körsträcka. Den har premiumläderklädsel, panoramasoltak och det senaste teknikpaketet inklusive navigation, Apple CarPlay och Android Auto. Fordonet har underhållits noggrant och levereras med fullständig servicehistorik.',
-  features: [
-    'Premiumläderklädsel',
-    'Panoramasoltak',
-    'Navigationssystem',
-    'Apple CarPlay & Android Auto',
-    'Harman Kardon ljudsystem',
-    'Uppvärmda & ventilerade säten',
-    'Adaptiv farthållare',
-    'Körfältsassistent',
-    'Parkeringssensorer',
-    'Dödavinkelvarnare',
-    'Trådlös laddning',
-    'LED-strålkastare',
-  ],
-  images: [
-    'https://images.unsplash.com/photo-1523983388277-336a66bf9bcd?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-    'https://images.unsplash.com/photo-1555215695-3004980ad54e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-    'https://images.unsplash.com/photo-1520050206274-a1ae44613e6d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-    'https://images.unsplash.com/photo-1503376780353-7e6692767b70?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-    'https://images.unsplash.com/photo-1526726538690-5cbf956ae2fd?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-  ],
-  seller: {
-    name: 'Premium Auto Stockholm',
-    phone: '08-123 45 67',
-    email: 'kontakt@premiumauto.se',
-    address: 'Bilgatan 123, 111 22 Stockholm',
-    logo: 'https://images.unsplash.com/photo-1551522435-a13afa10f103?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&h=100&q=80',
-    rating: 4.8,
-    reviewCount: 156,
-  },
-  similarCars: [
-    {
-      id: 2,
-      title: 'Mercedes-Benz E-Class',
-      price: 520000,
-      year: 2021,
-      mileage: '12 500 km',
-      image: 'https://images.unsplash.com/photo-1553440569-bcc63803a83d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-      location: 'Göteborg',
-    },
-    {
-      id: 3,
-      title: 'Audi A6',
-      price: 485000,
-      year: 2022,
-      mileage: '9 800 km',
-      image: 'https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-      location: 'Malmö',
-    },
-    {
-      id: 4,
-      title: 'Tesla Model 3',
-      price: 399000,
-      year: 2023,
-      mileage: '5 200 km',
-      image: 'https://images.unsplash.com/photo-1560958089-b8a1929cea89?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-      location: 'Uppsala',
-    },
-  ],
+// Format price with SEK
+const formatPrice = (price) => {
+  return new Intl.NumberFormat('sv-SE', { 
+    style: 'currency', 
+    currency: 'SEK',
+    maximumFractionDigits: 0 
+  }).format(price);
 };
 
 function CarDetailPage() {
@@ -125,6 +64,7 @@ function CarDetailPage() {
   
   const [car, setCar] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState(0);
   const [selectedImage, setSelectedImage] = useState(0);
   const [favorite, setFavorite] = useState(false);
@@ -136,24 +76,35 @@ function CarDetailPage() {
   });
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [openGallery, setOpenGallery] = useState(false);
+  const [galleryIndex, setGalleryIndex] = useState(0);
 
   // Fetch car data
   useEffect(() => {
-    // In a real app, this would be an API call
-    // For now, we'll just use the placeholder data
-    setTimeout(() => {
-      setCar(carData);
-      setFavorite(carData.favorite);
-      setLoading(false);
-      
-      // Set default message based on language
-      setContactForm(prev => ({
-        ...prev,
-        message: language === 'en' 
-          ? `I am interested in this ${carData.title}. Please contact me with more information.`
-          : `Jag är intresserad av denna ${carData.title}. Vänligen kontakta mig med mer information.`
-      }));
-    }, 500);
+    const fetchCarDetails = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const data = await carListingsApi.getListing(id);
+        setCar(data);
+        setFavorite(data.favorite);
+        setLoading(false);
+        
+        // Set default message based on language
+        setContactForm(prev => ({
+          ...prev,
+          message: language === 'en' 
+            ? `I am interested in this ${data.title}. Please contact me with more information.`
+            : `Jag är intresserad av denna ${data.title}. Vänligen kontakta mig med mer information.`
+        }));
+      } catch (err) {
+        console.error('Error fetching car details:', err);
+        setError('Failed to load car details. Please try again later.');
+        setLoading(false);
+      }
+    };
+    
+    fetchCarDetails();
   }, [id, language]);
 
   // Handle tab change
@@ -211,29 +162,78 @@ function CarDetailPage() {
     setSnackbarOpen(false);
   };
 
+  // Open gallery
+  const handleOpenGallery = (index) => {
+    setGalleryIndex(index);
+    setOpenGallery(true);
+  };
+  
+  // Close gallery
+  const handleCloseGallery = () => {
+    setOpenGallery(false);
+  };
+  
+  // Next image in gallery
+  const handleNextImage = () => {
+    if (car?.images) {
+      setGalleryIndex((prevIndex) => (prevIndex + 1) % car.images.length);
+    }
+  };
+  
+  // Previous image in gallery
+  const handlePrevImage = () => {
+    if (car?.images) {
+      setGalleryIndex((prevIndex) => (prevIndex - 1 + car.images.length) % car.images.length);
+    }
+  };
+
   if (loading) {
     return (
       <Container maxWidth="lg" sx={{ py: 4, textAlign: 'center' }}>
-        <Typography variant="h5">Loading car details...</Typography>
+        <CircularProgress />
+        <Typography variant="h6" sx={{ mt: 2 }}>
+          {t('loadingCarDetails')}
+        </Typography>
+      </Container>
+    );
+  }
+
+  if (error) {
+    return (
+      <Container maxWidth="lg" sx={{ py: 4 }}>
+        <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>
+        <Button 
+          component={RouterLink} 
+          to="/cars" 
+          startIcon={<ArrowBackIcon />}
+          variant="outlined"
+        >
+          {t('backToListings')}
+        </Button>
       </Container>
     );
   }
 
   if (!car) {
     return (
-      <Container maxWidth="lg" sx={{ py: 4, textAlign: 'center' }}>
-        <Typography variant="h5">Car not found</Typography>
-        <Button
-          component={RouterLink}
-          to="/cars"
+      <Container maxWidth="lg" sx={{ py: 4 }}>
+        <Alert severity="warning" sx={{ mb: 2 }}>{t('carNotFound')}</Alert>
+        <Button 
+          component={RouterLink} 
+          to="/cars" 
           startIcon={<ArrowBackIcon />}
-          sx={{ mt: 2 }}
+          variant="outlined"
         >
-          Back to Car Listings
+          {t('backToListings')}
         </Button>
       </Container>
     );
   }
+
+  // Prepare images array
+  const images = car.images && car.images.length > 0 
+    ? car.images.map(img => img.url) 
+    : ['https://via.placeholder.com/800x600?text=No+Image'];
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
@@ -241,461 +241,488 @@ function CarDetailPage() {
       <Breadcrumbs 
         separator={<NavigateNextIcon fontSize="small" />} 
         aria-label="breadcrumb"
-        sx={{ mb: 3 }}
+        sx={{ mb: 2 }}
       >
         <Link component={RouterLink} to="/" color="inherit">
-          Home
+          {t('home')}
         </Link>
         <Link component={RouterLink} to="/cars" color="inherit">
-          Car Listings
+          {t('carListings')}
         </Link>
         <Typography color="text.primary">{car.title}</Typography>
       </Breadcrumbs>
-
-      {/* Back Button */}
-      <Button
-        component={RouterLink}
-        to="/cars"
+      
+      {/* Back button */}
+      <Button 
+        component={RouterLink} 
+        to="/cars" 
         startIcon={<ArrowBackIcon />}
         sx={{ mb: 3 }}
       >
-        Back to Car Listings
+        {t('backToListings')}
       </Button>
-
-      {/* Car Title and Actions */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap' }}>
-        <Typography variant="h4" component="h1" sx={{ fontWeight: 700, mb: isMobile ? 2 : 0 }}>
-          {car.title}
-        </Typography>
-        <Box sx={{ display: 'flex', gap: 1 }}>
-          <IconButton 
-            aria-label="add to favorites" 
-            onClick={handleFavoriteToggle}
-            sx={{ 
-              border: '1px solid', 
-              borderColor: 'divider',
-              color: favorite ? 'error.main' : 'action.active',
-            }}
-          >
-            {favorite ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-          </IconButton>
-          <IconButton 
-            aria-label="share" 
-            sx={{ 
-              border: '1px solid', 
-              borderColor: 'divider',
-            }}
-          >
-            <ShareIcon />
-          </IconButton>
-        </Box>
-      </Box>
-
+      
       <Grid container spacing={4}>
-        {/* Left Column - Images and Details */}
+        {/* Left column - Images */}
         <Grid item xs={12} md={8}>
-          {/* Image Gallery */}
-          <Paper sx={{ mb: 4, overflow: 'hidden', borderRadius: 2 }}>
+          {/* Main image */}
+          <Paper 
+            elevation={2} 
+            sx={{ 
+              mb: 2, 
+              position: 'relative',
+              overflow: 'hidden',
+              cursor: 'pointer',
+              '&:hover': {
+                '& .MuiBox-root': {
+                  opacity: 1,
+                }
+              }
+            }}
+            onClick={() => handleOpenGallery(selectedImage)}
+          >
+            <Box 
+              component="img" 
+              src={images[selectedImage]} 
+              alt={car.title}
+              sx={{ 
+                width: '100%', 
+                height: isMobile ? '300px' : '500px',
+                objectFit: 'cover',
+                display: 'block',
+              }}
+            />
             <Box
               sx={{
-                height: { xs: '250px', sm: '350px', md: '450px' },
-                width: '100%',
-                position: 'relative',
-                overflow: 'hidden',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                bgcolor: 'rgba(0, 0, 0, 0.3)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                opacity: 0,
+                transition: 'opacity 0.3s',
               }}
             >
-              <Box
-                component="img"
-                src={car.images[selectedImage]}
-                alt={`${car.title} - Image ${selectedImage + 1}`}
-                sx={{
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                  transition: 'transform 0.3s ease-in-out',
-                  '&:hover': {
-                    transform: 'scale(1.05)',
-                  },
-                }}
-              />
-            </Box>
-            <Box sx={{ display: 'flex', p: 1, overflowX: 'auto' }}>
-              {car.images.map((image, index) => (
-                <Box
-                  key={index}
-                  component="img"
-                  src={image}
-                  alt={`${car.title} - Thumbnail ${index + 1}`}
-                  onClick={() => handleImageSelect(index)}
-                  sx={{
-                    width: '80px',
-                    height: '60px',
-                    objectFit: 'cover',
-                    m: 0.5,
-                    cursor: 'pointer',
-                    border: index === selectedImage ? '2px solid' : '2px solid transparent',
-                    borderColor: index === selectedImage ? 'primary.main' : 'transparent',
-                    borderRadius: 1,
-                    opacity: index === selectedImage ? 1 : 0.7,
-                    transition: 'all 0.2s',
-                    '&:hover': {
-                      opacity: 1,
-                    },
-                  }}
-                />
-              ))}
+              <Typography variant="h6" color="white">
+                {t('clickToViewGallery')}
+              </Typography>
             </Box>
           </Paper>
-
-          {/* Tabs for Details, Features, etc. */}
-          <Box sx={{ mb: 4 }}>
-            <Tabs
-              value={activeTab}
-              onChange={handleTabChange}
-              variant={isMobile ? "scrollable" : "fullWidth"}
-              scrollButtons={isMobile ? "auto" : false}
-              aria-label="car details tabs"
-              sx={{ mb: 2 }}
-            >
-              <Tab label="Description" />
-              <Tab label="Features" />
-              <Tab label="Specifications" />
-            </Tabs>
-
-            {/* Description Tab */}
-            {activeTab === 0 && (
-              <Box sx={{ p: 2 }}>
-                <Typography variant="body1" paragraph>
-                  {car.description}
-                </Typography>
-                <Box sx={{ mt: 3 }}>
-                  <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-                    Vehicle Overview
-                  </Typography>
-                  <Grid container spacing={2}>
-                    <Grid item xs={12} sm={6}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1.5 }}>
-                        <CalendarTodayIcon sx={{ color: 'text.secondary', mr: 1 }} />
-                        <Typography variant="body2">
-                          <strong>Year:</strong> {car.year}
-                        </Typography>
-                      </Box>
-                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1.5 }}>
-                        <SpeedIcon sx={{ color: 'text.secondary', mr: 1 }} />
-                        <Typography variant="body2">
-                          <strong>Mileage:</strong> {car.mileage}
-                        </Typography>
-                      </Box>
-                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1.5 }}>
-                        <LocalGasStationIcon sx={{ color: 'text.secondary', mr: 1 }} />
-                        <Typography variant="body2">
-                          <strong>Fuel Type:</strong> {car.fuel}
-                        </Typography>
-                      </Box>
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1.5 }}>
-                        <SettingsIcon sx={{ color: 'text.secondary', mr: 1 }} />
-                        <Typography variant="body2">
-                          <strong>Transmission:</strong> {car.transmission}
-                        </Typography>
-                      </Box>
-                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1.5 }}>
-                        <ColorLensIcon sx={{ color: 'text.secondary', mr: 1 }} />
-                        <Typography variant="body2">
-                          <strong>Color:</strong> {car.color}
-                        </Typography>
-                      </Box>
-                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1.5 }}>
-                        <DirectionsCarIcon sx={{ color: 'text.secondary', mr: 1 }} />
-                        <Typography variant="body2">
-                          <strong>VIN:</strong> {car.vin}
-                        </Typography>
-                      </Box>
-                    </Grid>
-                  </Grid>
-                </Box>
-              </Box>
-            )}
-
-            {/* Features Tab */}
-            {activeTab === 1 && (
-              <Box sx={{ p: 2 }}>
-                <Grid container spacing={2}>
-                  {car.features.map((feature, index) => (
-                    <Grid item xs={12} sm={6} key={index}>
-                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <CheckCircleIcon sx={{ color: 'success.main', mr: 1 }} fontSize="small" />
-                        <Typography variant="body2">{feature}</Typography>
-                      </Box>
-                    </Grid>
-                  ))}
-                </Grid>
-              </Box>
-            )}
-
-            {/* Specifications Tab */}
-            {activeTab === 2 && (
-              <Box sx={{ p: 2 }}>
-                <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-                  Technical Specifications
-                </Typography>
-                <Grid container spacing={2}>
-                  <Grid item xs={12} sm={6}>
-                    <Box sx={{ mb: 2 }}>
-                      <Typography variant="subtitle2" color="text.secondary">
-                        Engine
-                      </Typography>
-                      <Typography variant="body1">
-                        {car.engine}
-                      </Typography>
-                    </Box>
-                    <Box sx={{ mb: 2 }}>
-                      <Typography variant="subtitle2" color="text.secondary">
-                        Drivetrain
-                      </Typography>
-                      <Typography variant="body1">
-                        {car.drivetrain}
-                      </Typography>
-                    </Box>
-                    <Box sx={{ mb: 2 }}>
-                      <Typography variant="subtitle2" color="text.secondary">
-                        Transmission
-                      </Typography>
-                      <Typography variant="body1">
-                        {car.transmission}
-                      </Typography>
-                    </Box>
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <Box sx={{ mb: 2 }}>
-                      <Typography variant="subtitle2" color="text.secondary">
-                        Fuel Type
-                      </Typography>
-                      <Typography variant="body1">
-                        {car.fuel}
-                      </Typography>
-                    </Box>
-                    <Box sx={{ mb: 2 }}>
-                      <Typography variant="subtitle2" color="text.secondary">
-                        Color
-                      </Typography>
-                      <Typography variant="body1">
-                        {car.color}
-                      </Typography>
-                    </Box>
-                    <Box sx={{ mb: 2 }}>
-                      <Typography variant="subtitle2" color="text.secondary">
-                        VIN
-                      </Typography>
-                      <Typography variant="body1">
-                        {car.vin}
-                      </Typography>
-                    </Box>
-                  </Grid>
-                </Grid>
-              </Box>
-            )}
-          </Box>
-
-          {/* Similar Cars */}
-          <Box sx={{ mb: 4 }}>
-            <Typography variant="h5" gutterBottom sx={{ fontWeight: 600 }}>
-              Similar Cars
-            </Typography>
-            <Grid container spacing={3}>
-              {car.similarCars.map((similarCar) => (
-                <Grid item key={similarCar.id} xs={12} sm={6} md={4}>
-                  <Card 
+          
+          {/* Thumbnail images */}
+          {images.length > 1 && (
+            <Grid container spacing={1}>
+              {images.slice(0, 6).map((image, index) => (
+                <Grid item xs={4} sm={2} key={index}>
+                  <Paper 
+                    elevation={selectedImage === index ? 4 : 1}
                     sx={{ 
-                      height: '100%', 
-                      display: 'flex', 
-                      flexDirection: 'column',
-                      transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
-                      '&:hover': {
-                        transform: 'translateY(-8px)',
-                        boxShadow: '0 12px 20px rgba(0, 0, 0, 0.1)',
-                      },
+                      p: 0.5, 
+                      cursor: 'pointer',
+                      border: selectedImage === index ? `2px solid ${theme.palette.primary.main}` : 'none',
                     }}
+                    onClick={() => setSelectedImage(index)}
                   >
-                    <Box
-                      component={RouterLink}
-                      to={`/cars/${similarCar.id}`}
-                      sx={{ textDecoration: 'none', color: 'inherit' }}
-                    >
-                      <Box
-                        component="img"
-                        src={similarCar.image}
-                        alt={similarCar.title}
-                        sx={{
-                          width: '100%',
-                          height: '140px',
-                          objectFit: 'cover',
-                        }}
-                      />
-                      <CardContent>
-                        <Typography gutterBottom variant="subtitle1" component="h3" sx={{ fontWeight: 600 }}>
-                          {similarCar.title}
-                        </Typography>
-                        <Typography variant="subtitle1" color="primary" sx={{ fontWeight: 700, mb: 1 }}>
-                          {similarCar.price.toLocaleString()} kr
-                        </Typography>
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                          <Typography variant="body2" color="text.secondary">
-                            {similarCar.year}
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            {similarCar.mileage}
-                          </Typography>
-                        </Box>
-                      </CardContent>
-                    </Box>
-                  </Card>
+                    <Box 
+                      component="img" 
+                      src={image} 
+                      alt={`${car.title} - Image ${index + 1}`}
+                      sx={{ 
+                        width: '100%', 
+                        height: '60px',
+                        objectFit: 'cover',
+                        display: 'block',
+                      }}
+                    />
+                  </Paper>
                 </Grid>
               ))}
+              {images.length > 6 && (
+                <Grid item xs={4} sm={2}>
+                  <Paper 
+                    elevation={1}
+                    sx={{ 
+                      p: 0.5, 
+                      cursor: 'pointer',
+                      height: '60px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      bgcolor: 'rgba(0, 0, 0, 0.7)',
+                    }}
+                    onClick={() => handleOpenGallery(6)}
+                  >
+                    <Typography variant="body2" color="white">
+                      +{images.length - 6} {t('more')}
+                    </Typography>
+                  </Paper>
+                </Grid>
+              )}
             </Grid>
-          </Box>
+          )}
+          
+          {/* Car details */}
+          <Paper elevation={2} sx={{ mt: 4, p: 3 }}>
+            <Typography variant="h5" component="h2" gutterBottom>
+              {t('carDetails')}
+            </Typography>
+            <Divider sx={{ mb: 2 }} />
+            
+            <Grid container spacing={2}>
+              <Grid item xs={6} sm={4}>
+                <Typography variant="subtitle2" color="text.secondary">
+                  {t('make')}
+                </Typography>
+                <Typography variant="body1">
+                  {car.make || 'N/A'}
+                </Typography>
+              </Grid>
+              <Grid item xs={6} sm={4}>
+                <Typography variant="subtitle2" color="text.secondary">
+                  {t('model')}
+                </Typography>
+                <Typography variant="body1">
+                  {car.model || 'N/A'}
+                </Typography>
+              </Grid>
+              <Grid item xs={6} sm={4}>
+                <Typography variant="subtitle2" color="text.secondary">
+                  {t('year')}
+                </Typography>
+                <Typography variant="body1">
+                  {car.year || 'N/A'}
+                </Typography>
+              </Grid>
+              <Grid item xs={6} sm={4}>
+                <Typography variant="subtitle2" color="text.secondary">
+                  {t('mileage')}
+                </Typography>
+                <Typography variant="body1">
+                  {car.mileage ? `${car.mileage.toLocaleString()} ${car.mileageUnit || 'km'}` : 'N/A'}
+                </Typography>
+              </Grid>
+              <Grid item xs={6} sm={4}>
+                <Typography variant="subtitle2" color="text.secondary">
+                  {t('fuelType')}
+                </Typography>
+                <Typography variant="body1">
+                  {car.fuel || car.fuelType || 'N/A'}
+                </Typography>
+              </Grid>
+              <Grid item xs={6} sm={4}>
+                <Typography variant="subtitle2" color="text.secondary">
+                  {t('transmission')}
+                </Typography>
+                <Typography variant="body1">
+                  {car.transmission || 'N/A'}
+                </Typography>
+              </Grid>
+              <Grid item xs={6} sm={4}>
+                <Typography variant="subtitle2" color="text.secondary">
+                  {t('color')}
+                </Typography>
+                <Typography variant="body1">
+                  {car.color || 'N/A'}
+                </Typography>
+              </Grid>
+              <Grid item xs={6} sm={4}>
+                <Typography variant="subtitle2" color="text.secondary">
+                  {t('horsePower')}
+                </Typography>
+                <Typography variant="body1">
+                  {car.horsePower ? `${car.horsePower} hk` : 'N/A'}
+                </Typography>
+              </Grid>
+              <Grid item xs={6} sm={4}>
+                <Typography variant="subtitle2" color="text.secondary">
+                  {t('bodyType')}
+                </Typography>
+                <Typography variant="body1">
+                  {car.bodyType || 'N/A'}
+                </Typography>
+              </Grid>
+              {car.driveType && (
+                <Grid item xs={6} sm={4}>
+                  <Typography variant="subtitle2" color="text.secondary">
+                    {t('driveType')}
+                  </Typography>
+                  <Typography variant="body1">
+                    {car.driveType}
+                  </Typography>
+                </Grid>
+              )}
+              {car.engineSize && (
+                <Grid item xs={6} sm={4}>
+                  <Typography variant="subtitle2" color="text.secondary">
+                    {t('engineSize')}
+                  </Typography>
+                  <Typography variant="body1">
+                    {car.engineSize}
+                  </Typography>
+                </Grid>
+              )}
+              {car.doors && (
+                <Grid item xs={6} sm={4}>
+                  <Typography variant="subtitle2" color="text.secondary">
+                    {t('doors')}
+                  </Typography>
+                  <Typography variant="body1">
+                    {car.doors}
+                  </Typography>
+                </Grid>
+              )}
+            </Grid>
+          </Paper>
+          
+          {/* Description */}
+          <Paper elevation={2} sx={{ mt: 4, p: 3 }}>
+            <Typography variant="h5" component="h2" gutterBottom>
+              {t('description')}
+            </Typography>
+            <Divider sx={{ mb: 2 }} />
+            <Typography variant="body1" sx={{ whiteSpace: 'pre-line' }}>
+              {car.description || t('noDescriptionAvailable')}
+            </Typography>
+          </Paper>
+          
+          {/* Source information */}
+          <Paper elevation={2} sx={{ mt: 4, p: 3 }}>
+            <Typography variant="h5" component="h2" gutterBottom>
+              {t('sourceInformation')}
+            </Typography>
+            <Divider sx={{ mb: 2 }} />
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <Typography variant="subtitle2" color="text.secondary">
+                  {t('source')}
+                </Typography>
+                <Typography variant="body1">
+                  {car.source || 'N/A'}
+                </Typography>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Typography variant="subtitle2" color="text.secondary">
+                  {t('scrapedAt')}
+                </Typography>
+                <Typography variant="body1">
+                  {car.scrapedAt ? new Date(car.scrapedAt).toLocaleString() : 'N/A'}
+                </Typography>
+              </Grid>
+              <Grid item xs={12}>
+                <Typography variant="subtitle2" color="text.secondary">
+                  {t('sourceUrl')}
+                </Typography>
+                <Link href={car.sourceUrl} target="_blank" rel="noopener noreferrer">
+                  {t('viewOriginalListing')}
+                </Link>
+              </Grid>
+            </Grid>
+          </Paper>
         </Grid>
-
-        {/* Right Column - Price and Contact */}
+        
+        {/* Right column - Price and contact */}
         <Grid item xs={12} md={4}>
-          {/* Price Card */}
-          <Card sx={{ mb: 4, position: 'sticky', top: 20 }}>
+          {/* Price card */}
+          <Card elevation={3} sx={{ mb: 3 }}>
             <CardContent>
-              <Typography variant="h4" color="primary" sx={{ fontWeight: 700, mb: 2 }}>
-                {car.price.toLocaleString()} kr
+              <Typography variant="h4" component="h1" gutterBottom>
+                {car.title}
+              </Typography>
+              <Typography variant="h3" color="primary" gutterBottom>
+                {formatPrice(car.price)}
               </Typography>
               
+              <Stack direction="row" spacing={1} sx={{ mb: 2 }}>
+                <Chip 
+                  icon={<CalendarTodayIcon />} 
+                  label={car.year || 'N/A'} 
+                  variant="outlined"
+                />
+                <Chip 
+                  icon={<SpeedIcon />} 
+                  label={car.mileage ? `${car.mileage.toLocaleString()} ${car.mileageUnit || 'km'}` : 'N/A'} 
+                  variant="outlined"
+                />
+              </Stack>
+              
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <LocationOnIcon fontSize="small" sx={{ color: 'text.secondary', mr: 1 }} />
-                <Typography variant="body2" color="text.secondary">
-                  {car.location}
+                <LocationOnIcon sx={{ mr: 1, color: 'text.secondary' }} />
+                <Typography variant="body1">
+                  {car.location || car.seller?.location || 'N/A'}
                 </Typography>
               </Box>
               
               <Divider sx={{ my: 2 }} />
               
-              {/* Seller Information */}
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <Box
-                  component="img"
-                  src={car.seller.logo}
-                  alt={car.seller.name}
-                  sx={{
-                    width: 50,
-                    height: 50,
-                    borderRadius: '50%',
-                    mr: 2,
-                  }}
-                />
-                <Box>
-                  <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-                    {car.seller.name}
-                  </Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <Typography variant="body2" color="text.secondary">
-                      Rating: {car.seller.rating}/5
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ ml: 1 }}>
-                      ({car.seller.reviewCount} reviews)
-                    </Typography>
-                  </Box>
-                </Box>
-              </Box>
-              
-              <Divider sx={{ my: 2 }} />
-              
-              {/* Contact Form */}
-              <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-                {t('contactSeller')}
-              </Typography>
-              
-              <Box component="form" onSubmit={handleContactSubmit} sx={{ mt: 2 }}>
-                <TextField
+              <Stack direction="row" spacing={2}>
+                <Button 
+                  variant="contained" 
+                  color="primary" 
                   fullWidth
-                  label={t('yourName')}
-                  name="name"
-                  value={contactForm.name}
-                  onChange={handleContactFormChange}
-                  margin="normal"
-                  required
-                  size="small"
-                />
-                <TextField
-                  fullWidth
-                  label={t('email')}
-                  name="email"
-                  type="email"
-                  value={contactForm.email}
-                  onChange={handleContactFormChange}
-                  margin="normal"
-                  required
-                  size="small"
-                />
-                <TextField
-                  fullWidth
-                  label={t('phone')}
-                  name="phone"
-                  value={contactForm.phone}
-                  onChange={handleContactFormChange}
-                  margin="normal"
-                  size="small"
-                />
-                <TextField
-                  fullWidth
-                  label={t('message')}
-                  name="message"
-                  value={contactForm.message}
-                  onChange={handleContactFormChange}
-                  margin="normal"
-                  required
-                  multiline
-                  rows={4}
-                  size="small"
-                />
-                
-                <Button
-                  type="submit"
-                  fullWidth
-                  variant="contained"
-                  size="large"
-                  sx={{ mt: 2, py: 1.5 }}
-                  className="pulse-button"
+                  component="a"
+                  href={car.sourceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
                 >
-                  {t('sendMessage')}
+                  {t('viewOriginalListing')}
                 </Button>
+                <IconButton 
+                  color={favorite ? 'primary' : 'default'} 
+                  onClick={handleFavoriteToggle}
+                  aria-label={favorite ? 'Remove from favorites' : 'Add to favorites'}
+                >
+                  {favorite ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+                </IconButton>
+                <IconButton 
+                  onClick={() => {
+                    if (navigator.share) {
+                      navigator.share({
+                        title: car.title,
+                        text: `Check out this ${car.title} for ${formatPrice(car.price)}`,
+                        url: window.location.href,
+                      })
+                      .catch((error) => console.log('Error sharing', error));
+                    } else {
+                      // Fallback for browsers that don't support the Web Share API
+                      navigator.clipboard.writeText(window.location.href)
+                        .then(() => alert('Link copied to clipboard!'))
+                        .catch((error) => console.error('Could not copy text: ', error));
+                    }
+                  }}
+                  aria-label="Share"
+                >
+                  <ShareIcon />
+                </IconButton>
+              </Stack>
+            </CardContent>
+          </Card>
+          
+          {/* Seller information */}
+          <Card elevation={3}>
+            <CardContent>
+              <Typography variant="h5" component="h2" gutterBottom>
+                {t('sellerInformation')}
+              </Typography>
+              <Divider sx={{ mb: 2 }} />
+              
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <PersonIcon sx={{ mr: 1, color: 'text.secondary' }} />
+                <Typography variant="body1">
+                  {car.seller?.name || t('notSpecified')}
+                </Typography>
               </Box>
               
-              <Divider sx={{ my: 2 }} />
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <StoreIcon sx={{ mr: 1, color: 'text.secondary' }} />
+                <Typography variant="body1">
+                  {car.seller?.type === 'dealer' ? t('dealer') : 
+                   car.seller?.type === 'private' ? t('privateSeller') : 
+                   t('notSpecified')}
+                </Typography>
+              </Box>
               
-              {/* Direct Contact */}
-              <Typography variant="subtitle2" gutterBottom>
-                {t('orContactDirectly')}
-              </Typography>
-              <Button
-                fullWidth
-                variant="outlined"
-                startIcon={<PhoneIcon />}
-                sx={{ mb: 1 }}
-                component="a"
-                href={`tel:${car.seller.phone}`}
-              >
-                {car.seller.phone}
-              </Button>
-              <Button
-                fullWidth
-                variant="outlined"
-                startIcon={<EmailIcon />}
-                component="a"
-                href={`mailto:${car.seller.email}`}
-              >
-                {t('emailSeller')}
-              </Button>
+              {car.seller?.phone && (
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                  <PhoneIcon sx={{ mr: 1, color: 'text.secondary' }} />
+                  <Typography variant="body1">
+                    <Link href={`tel:${car.seller.phone}`}>
+                      {car.seller.phone}
+                    </Link>
+                  </Typography>
+                </Box>
+              )}
+              
+              {car.seller?.email && (
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                  <EmailIcon sx={{ mr: 1, color: 'text.secondary' }} />
+                  <Typography variant="body1">
+                    <Link href={`mailto:${car.seller.email}`}>
+                      {car.seller.email}
+                    </Link>
+                  </Typography>
+                </Box>
+              )}
+              
+              {car.seller?.location && (
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <LocationOnIcon sx={{ mr: 1, color: 'text.secondary' }} />
+                  <Typography variant="body1">
+                    {car.seller.location}
+                  </Typography>
+                </Box>
+              )}
             </CardContent>
           </Card>
         </Grid>
       </Grid>
-
+      
+      {/* Image Gallery Dialog */}
+      <Dialog
+        fullScreen={isMobile}
+        maxWidth="lg"
+        open={openGallery}
+        onClose={handleCloseGallery}
+      >
+        <DialogTitle sx={{ m: 0, p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Typography variant="h6">{car.title} - {t('image')} {galleryIndex + 1} / {images.length}</Typography>
+          <IconButton
+            aria-label="close"
+            onClick={handleCloseGallery}
+            sx={{ color: 'grey.500' }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent dividers sx={{ p: 1, position: 'relative' }}>
+          <Box 
+            component="img" 
+            src={images[galleryIndex]} 
+            alt={`${car.title} - Image ${galleryIndex + 1}`}
+            sx={{ 
+              width: '100%', 
+              maxHeight: '80vh',
+              objectFit: 'contain',
+              display: 'block',
+            }}
+          />
+          
+          {images.length > 1 && (
+            <>
+              <IconButton
+                onClick={handlePrevImage}
+                sx={{ 
+                  position: 'absolute', 
+                  left: 16, 
+                  top: '50%', 
+                  transform: 'translateY(-50%)',
+                  bgcolor: 'rgba(255, 255, 255, 0.8)',
+                  '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.9)' },
+                }}
+              >
+                <NavigateNextIcon sx={{ transform: 'rotate(180deg)' }} />
+              </IconButton>
+              <IconButton
+                onClick={handleNextImage}
+                sx={{ 
+                  position: 'absolute', 
+                  right: 16, 
+                  top: '50%', 
+                  transform: 'translateY(-50%)',
+                  bgcolor: 'rgba(255, 255, 255, 0.8)',
+                  '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.9)' },
+                }}
+              >
+                <NavigateNextIcon />
+              </IconButton>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+      
       {/* Snackbar for form submission feedback */}
       <Snackbar
         open={snackbarOpen}
